@@ -24,7 +24,7 @@ classifiers = [
 ]
 description = "A custom component for Home Assistant to use n8n as a conversation agent."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13.2"
 version = "0.0.0"
 
 [project.urls]
@@ -35,5 +35,5 @@ Issues = "https://github.com/eulemitkeule/n8n-conversation/issues"
 
 [dependency-groups]
 dev = [
-    "homeassistant>=2025.4.4",
+    "homeassistant>=2025.8.2",
 ]
