@@ -1,0 +1,16 @@
+{
+    "domain": "webhook_conversation",
+    "name": "Webhook Conversation",
+    "codeowners": [
+        "@EuleMitKeule"
+    ],
+    "config_flow": true,
+    "documentation": "https://github.com/eulemitkeule/webhook-conversation",
+    "iot_class": "cloud_polling",
+    "integration_type": "service",
+    "requirements": [
+        "voluptuous-openapi"
+    ],
+    "issue_tracker": "https://github.com/eulemitkeule/webhook-conversation/issues",
+    "version": "0.0.0"
+}

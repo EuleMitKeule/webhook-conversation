@@ -1,5 +1,5 @@
 [project]
-name = "n8n-conversation"
+name = "webhook-conversation"
 authors = [{ name = "Lennard Beers", email = "l.beers@outlook.de" }]
 maintainers = [{ name = "Lennard Beers", email = "l.beers@outlook.de" }]
 license = { file = "LICENSE.md" }
@@ -9,8 +9,9 @@ keywords = [
     "custom-component",
     "conversation",
     "voice-assistant",
+    "webhook",
     "n8n",
-    "n8n-conversation",
+    "webhook-conversation",
     "home-assistant",
     "home-assistant-custom-component",
     "home-assistant-integration",
@@ -22,18 +23,13 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.13",
 ]
-description = "A custom component for Home Assistant to use n8n as a conversation agent."
+description = "A custom component for Home Assistant to use webhooks for conversation and AI features."
 readme = "README.md"
 requires-python = ">=3.13"
 version = "0.0.0"
 
 [project.urls]
-Repository = "https://github.com/eulemitkeule/n8n-conversation"
-Documentation = "https://github.com/eulemitkeule/n8n-conversation/blob/master/README.md"
-Changelog = "https://github.com/EuleMitKeule/n8n-conversation/releases"
-Issues = "https://github.com/eulemitkeule/n8n-conversation/issues"
-
-[dependency-groups]
-dev = [
-    "homeassistant>=2025.4.4",
-]
+Repository = "https://github.com/eulemitkeule/webhook-conversation"
+Documentation = "https://github.com/eulemitkeule/webhook-conversation/blob/master/README.md"
+Changelog = "https://github.com/EuleMitKeule/webhook-conversation/releases"
+Issues = "https://github.com/eulemitkeule/webhook-conversation/issues"

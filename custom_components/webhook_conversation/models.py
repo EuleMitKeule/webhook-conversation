@@ -1,4 +1,4 @@
-"""Typed models for the n8n conversation integration payloads."""
+"""Typed models for the webhook conversation integration payloads."""
 
 from __future__ import annotations
 
@@ -8,15 +8,15 @@ from typing import Any, Literal, NotRequired, TypedDict
 MessageRole = Literal["assistant", "system", "tool_result", "user"]
 
 
-class N8nMessage(TypedDict):
-    """A single message item sent to n8n."""
+class WebhookConversationMessage(TypedDict):
+    """A single message item."""
 
     role: MessageRole
     content: str
 
 
-class N8nBinaryObject(TypedDict):
-    """A single binary object sent to n8n."""
+class WebhookConversationBinaryObject(TypedDict):
+    """A single binary object."""
 
     name: str
     path: Path
@@ -24,15 +24,15 @@ class N8nBinaryObject(TypedDict):
     data: str
 
 
-class N8nPayload(TypedDict):
-    """Base payload shared by n8n webhook calls."""
+class WebhookConversationPayload(TypedDict):
+    """Base payload shared by webhook calls."""
 
     conversation_id: str
-    messages: list[N8nMessage]
+    messages: list[WebhookConversationMessage]
     query: NotRequired[str | None]
     extra_system_prompt: NotRequired[str | None]
     task_name: NotRequired[str | None]
     structure: NotRequired[dict[str, Any] | None]
     user_id: NotRequired[str | None]
     exposed_entities: NotRequired[str]
-    binary_objects: NotRequired[list[N8nBinaryObject]]
+    binary_objects: NotRequired[list[WebhookConversationBinaryObject]]

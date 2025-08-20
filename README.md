@@ -1,23 +1,23 @@
-# n8n Conversation
+# Webhook Conversation
 
-[![My Home Assistant](https://img.shields.io/badge/Home%20Assistant-%2341BDF5.svg?style=flat&logo=home-assistant&label=My)](https://my.home-assistant.io/redirect/hacs_repository/?owner=EuleMitKeule&repository=n8n-conversation&category=integration)
+[![My Home Assistant](https://img.shields.io/badge/Home%20Assistant-%2341BDF5.svg?style=flat&logo=home-assistant&label=My)](https://my.home-assistant.io/redirect/hacs_repository/?owner=EuleMitKeule&repository=webhook-conversation&category=integration)
 
-![GitHub License](https://img.shields.io/github/license/eulemitkeule/n8n-conversation)
+![GitHub License](https://img.shields.io/github/license/eulemitkeule/webhook-conversation)
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/eulemitkeule?logo=GitHub-Sponsors)
 
 > [!NOTE]
 > This integration requires Home Assistant `2025.8`.
 
-_Integration to connect Home Assistant with n8n workflows through conversation agents._
+_Integration to connect Home Assistant conversation agents and AI features to external systems through webhooks._
 
-**This integration allows you to use n8n workflows as conversation agents in Home Assistant, enabling powerful automation and AI-driven interactions with your smart home.**
+**This integration allows you to use n8n workflows or other custom webhook-based systems as conversation agents in Home Assistant, enabling powerful automation and AI-driven interactions with your smart home.**
 
 ## Features
 
 - 🤖 Use n8n workflows as conversation agents in Home Assistant
 - 🧩 AI Tasks via a dedicated webhook, supporting text or structured outputs
 - 📎 Support for file attachments in AI Tasks (images, documents, etc.)
-- 📡 Send conversation context and exposed entities to n8n webhooks
+- 📡 Send conversation context and exposed entities to webhooks
 - 🏠 Seamless integration with Home Assistant's voice assistant system
 - 🔧 Configurable webhook URLs and output fields
 - ⏱️ Configurable timeout for handling long-running workflows (1-300 seconds)
@@ -36,14 +36,14 @@ _Integration to connect Home Assistant with n8n workflows through conversation a
 1. Make sure [HACS](https://hacs.xyz/) is installed
 2. Add this repository as a custom repository in HACS:
    - Go to HACS → Integrations → ⋮ → Custom repositories
-   - Add `https://github.com/eulemitkeule/n8n-conversation` as an Integration
+   - Add `https://github.com/eulemitkeule/webhook-conversation` as an Integration
 3. Search for "n8n Conversation" in HACS and install it
 4. Restart Home Assistant
 
 ### Manual Installation
 
-1. Download the latest release from the [releases page](https://github.com/eulemitkeule/n8n-conversation/releases)
-2. Extract the `custom_components/n8n_conversation` folder to your `custom_components` directory
+1. Download the latest release from the [releases page](https://github.com/eulemitkeule/webhook-conversation/releases)
+2. Extract the `custom_components/webhook_conversation` folder to your `custom_components` directory
 3. Restart Home Assistant
 
 ## Configuration
@@ -51,13 +51,13 @@ _Integration to connect Home Assistant with n8n workflows through conversation a
 ### Home Assistant Setup
 
 1. Go to **Settings** → **Devices & Services**
-2. Click **Add Integration** and search for "n8n Conversation"
+2. Click **Add Integration** and search for "Webhook Conversation"
 3. Configure the integration with:
-   - **Name**: A friendly name for your n8n agent
-   - **Webhook URL**: The URL of your n8n webhook endpoint (remember to activate the workflow in n8n and to use the production webhook URL)
+   - **Name**: A friendly name for your webhook agent
+   - **Webhook URL**: The URL of your webhook endpoint (remember to activate the workflow in n8n and to use the production webhook URL)
    - **AI Task Webhook URL (optional)**: A separate webhook endpoint for AI Tasks
-   - **Output Field**: The field name in the n8n response containing the reply (default: "output")
-   - **Timeout**: The timeout in seconds for waiting for a response from n8n (default: 30 seconds, range: 1-300 seconds)
+   - **Output Field**: The field name in the webhook response containing the reply (default: "output")
+   - **Timeout**: The timeout in seconds for waiting for a response (default: 30 seconds, range: 1-300 seconds)
 
 ### n8n Workflow Setup
 
@@ -160,10 +160,10 @@ To use the n8n conversation agent with voice assistants, you need to create a vo
 1. Go to **Settings** → **Voice assistants**
 2. Click **Add Assistant**
 3. Configure your pipeline:
-   - **Name**: Give your pipeline a descriptive name (e.g., "n8n Assistant")
+   - **Name**: Give your pipeline a descriptive name (e.g., "Webhook Assistant")
    - **Language**: Select your preferred language
    - **Speech-to-text**: Choose your preferred STT engine (e.g., Whisper, Google Cloud)
-   - **Conversation agent**: Select your n8n conversation agent from the dropdown
+   - **Conversation agent**: Select your webhook conversation agent from the dropdown
    - **Text-to-speech**: Choose your preferred TTS engine (e.g., Google Translate, Piper)
    - **Wake word**: Optionally configure a wake word engine
 4. Click **Create** to save your pipeline
@@ -171,7 +171,7 @@ To use the n8n conversation agent with voice assistants, you need to create a vo
 
 ## Attachment Support
 
-The n8n conversation integration supports file attachments in AI Tasks, allowing you to send images, documents, and other files to your n8n workflows for processing.
+The webhook conversation integration supports file attachments in AI Tasks, allowing you to send images, documents, and other files to your n8n workflows for processing.
 
 ### How Attachments Work
 
@@ -208,8 +208,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Support
 
-- 🐛 [Report issues](https://github.com/eulemitkeule/n8n-conversation/issues)
-- 💬 [GitHub Discussions](https://github.com/eulemitkeule/n8n-conversation/discussions)
+- 🐛 [Report issues](https://github.com/eulemitkeule/webhook-conversation/issues)
+- 💬 [GitHub Discussions](https://github.com/eulemitkeule/webhook-conversation/discussions)
 
 ## License
 

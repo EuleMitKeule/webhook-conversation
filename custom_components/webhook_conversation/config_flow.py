@@ -1,4 +1,4 @@
-"""Config flow for the n8n conversation integration."""
+"""Config flow for the webhook conversation integration."""
 
 from __future__ import annotations
 
@@ -81,8 +81,8 @@ def _get_schema(options: dict[str, Any] | None = None) -> vol.Schema:
     )
 
 
-class N8nConversationConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Config flow for n8n conversation integration."""
+class WebhookConversationConfigFlow(ConfigFlow, domain=DOMAIN):
+    """Config flow for webhook conversation integration."""
 
     VERSION = 1
 
@@ -95,7 +95,8 @@ class N8nConversationConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_show_form(step_id="user", data_schema=_get_schema())
 
         _LOGGER.debug(
-            "Creating n8n conversation configuration with user input: %s", user_input
+            "Creating webhook conversation configuration with user input: %s",
+            user_input,
         )
 
         webhook_url: str = user_input[CONF_WEBHOOK_URL]
@@ -135,7 +136,7 @@ class N8nConversationConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class OptionsFlowHandler(OptionsFlow):
-    """Handle Options flow for n8n conversation integration."""
+    """Handle Options flow for webhook conversation integration."""
 
     def __init__(self, options: dict[str, Any]) -> None:
         """Initialize the options flow handler."""
@@ -151,7 +152,7 @@ class OptionsFlowHandler(OptionsFlow):
             )
 
         _LOGGER.debug(
-            "Updating n8n conversation configuration with user input: %s",
+            "Updating webhook conversation configuration with user input: %s",
             user_input,
         )
 

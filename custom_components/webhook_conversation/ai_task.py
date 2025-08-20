@@ -1,4 +1,4 @@
-"""AI Task platform for n8n integration."""
+"""AI Task platform for webhook conversation integration."""
 
 from __future__ import annotations
 
@@ -15,8 +15,8 @@ from homeassistant.helpers import llm
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import CONF_AI_TASK_WEBHOOK_URL
-from .entity import N8nEntity
-from .models import N8nBinaryObject
+from .entity import WebhookConversationBaseEntity
+from .models import WebhookConversationBinaryObject
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,15 +26,15 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up AI Task entity for n8n."""
+    """Set up AI Task entity for webhook conversation."""
     if not config_entry.options.get(CONF_AI_TASK_WEBHOOK_URL):
         return
 
-    async_add_entities([N8nAITaskEntity(config_entry)])
+    async_add_entities([WebhookAITaskEntity(config_entry)])
 
 
-class N8nAITaskEntity(N8nEntity, ai_task.AITaskEntity):
-    """n8n AI Task entity."""
+class WebhookAITaskEntity(WebhookConversationBaseEntity, ai_task.AITaskEntity):
+    """Webhook AI Task entity."""
 
     _attr_has_entity_name = True
     _attr_name = None
@@ -45,7 +45,7 @@ class N8nAITaskEntity(N8nEntity, ai_task.AITaskEntity):
 
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialize the entity."""
-        N8nEntity.__init__(self, config_entry)
+        WebhookConversationBaseEntity.__init__(self, config_entry)
         self._webhook_url = config_entry.options[CONF_AI_TASK_WEBHOOK_URL]
         self._attr_unique_id = f"{config_entry.entry_id}-ai_task"
 
@@ -59,14 +59,14 @@ class N8nAITaskEntity(N8nEntity, ai_task.AITaskEntity):
         payload["query"] = task.instructions
         payload["task_name"] = task.name
 
-        binary_objects: list[N8nBinaryObject] = []
+        binary_objects: list[WebhookConversationBinaryObject] = []
         if task.attachments:
             for attachment in task.attachments:
                 async with await anyio.open_file(attachment.path, "rb") as f:
                     attachment_bytes = await f.read()
                     attachment_base64 = base64.b64encode(attachment_bytes).decode()
                     binary_objects.append(
-                        N8nBinaryObject(
+                        WebhookConversationBinaryObject(
                             name=attachment.media_content_id,
                             path=attachment.path,
                             mime_type=attachment.mime_type,

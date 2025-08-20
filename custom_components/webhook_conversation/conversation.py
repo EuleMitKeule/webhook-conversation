@@ -1,4 +1,4 @@
-"""Conversation platform for n8n integration."""
+"""Conversation platform for webhook conversation integration."""
 
 import json
 import logging
@@ -18,7 +18,7 @@ from homeassistant.helpers import (
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import CONF_WEBHOOK_URL, DOMAIN
-from .entity import N8nEntity
+from .entity import WebhookConversationBaseEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,14 +30,16 @@ async def async_setup_entry(
 ) -> None:
     """Set up the integration from a config entry."""
     async_add_entities(
-        [N8nConversationEntity(config_entry)],
+        [WebhookConversationEntity(config_entry)],
     )
 
 
-class N8nConversationEntity(
-    conversation.ConversationEntity, conversation.AbstractConversationAgent, N8nEntity
+class WebhookConversationEntity(
+    conversation.ConversationEntity,
+    conversation.AbstractConversationAgent,
+    WebhookConversationBaseEntity,
 ):
-    """n8n conversation agent."""
+    """Webhook conversation agent."""
 
     _attr_has_entity_name = True
     _attr_name = None
@@ -45,7 +47,7 @@ class N8nConversationEntity(
 
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialize the agent."""
-        N8nEntity.__init__(self, config_entry)
+        WebhookConversationBaseEntity.__init__(self, config_entry)
         self._webhook_url = config_entry.options[CONF_WEBHOOK_URL]
         self._attr_unique_id = f"{config_entry.entry_id}-conversation"
 
@@ -84,7 +86,7 @@ class N8nConversationEntity(
         user_input: conversation.ConversationInput,
         chat_log: conversation.ChatLog,
     ) -> None:
-        """Send the chat log to the n8n webhook and process the response."""
+        """Send the chat log to the webhook and process the response."""
         payload = self._build_payload(chat_log)
         user_messages = [
             user_message
