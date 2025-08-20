@@ -1,0 +1,143 @@
+{
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "b40547b3-7749-4ff3-b3e1-10c37936e551",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                -336,
+                304
+            ],
+            "id": "298cb9aa-724f-4e91-81eb-d6f78c943832",
+            "name": "Webhook",
+            "webhookId": "b40547b3-7749-4ff3-b3e1-10c37936e551"
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                416,
+                304
+            ],
+            "id": "5e9e98c6-3826-4060-98a3-4585bee44f19",
+            "name": "Respond to Webhook"
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "value": "gpt-5-nano",
+                    "mode": "list",
+                    "cachedResultName": "gpt-5-nano"
+                },
+                "options": {
+                    "responseFormat": "={{ ($json.body && $json.body.structure != null) ? 'json_object' : 'text' }}"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1.2,
+            "position": [
+                16,
+                512
+            ],
+            "id": "cdcf10ee-6dbc-41a2-baa2-5e04774d9764",
+            "name": "gpt-5-nano",
+            "credentials": {
+                "openAiApi": {
+                    "id": "wPtEzytsyQHnTsV2",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const src = items[0].json;\nconst list = Array.isArray(src?.body?.binary_objects) ? src.body.binary_objects : [];\n\nfunction stripPrefix(val){ return String(val ?? '').replace(/^data:.*?;base64,/, ''); }\nfunction baseName(p){ const s=String(p??''); const a=s.split('/').pop(); const b=s.split('\\\\').pop(); return (a&&a.length<=s.length?a:b)||''; }\nfunction safeKey(name,i){ const k=String(name??'').trim().toLowerCase().replace(/[^a-z0-9_\\-]/g,'_'); return k||`data${i}`; }\n\n// If no binaries present: pass JSON through 1:1 (no binary prop)\nif (!list.length) {\n  return [{ json: src }];\n}\n\n// Else: emit one item per binary, JSON untouched\nreturn list.map((bo, i) => {\n  const key = safeKey(bo?.name, i);\n  return {\n    json: src, // unchanged\n    binary: {\n      [key]: {\n        data: stripPrefix(bo?.data),            // base64 string (not Buffer)\n        fileName: baseName(bo?.path) || key,\n        mimeType: bo?.mime_type || 'application/octet-stream',\n      },\n    },\n  };\n});\n"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -160,
+                304
+            ],
+            "id": "8a9af492-732f-4ddb-93e5-af9c2228acac",
+            "name": "Extract attachments"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $json.body.query }}",
+                "options": {
+                    "systemMessage": "={{ $json.body && $json.body.structure != null ? \"You must return the final answer strictly as JSON that conforms to the following schema: \" + JSON.stringify($json.body.structure) : \"\" }}",
+                    "passthroughBinaryImages": true
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 1.7,
+            "position": [
+                16,
+                304
+            ],
+            "id": "689f9a32-8c72-4a90-bc64-3d067c49e7b6",
+            "name": "Agent"
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Extract attachments",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "gpt-5-nano": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Extract attachments": {
+            "main": [
+                [
+                    {
+                        "node": "Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agent": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "fac97a43284b2c7e834ae31b61acaecce7a1a7c9f9c28473ca61f99fd163ba9b"
+    }
+}

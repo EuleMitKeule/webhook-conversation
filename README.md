@@ -22,6 +22,10 @@ _Integration to connect Home Assistant with n8n workflows through conversation a
 - 🔧 Configurable webhook URLs and output fields
 - ⏱️ Configurable timeout for handling long-running workflows (1-300 seconds)
 
+## Quick Start
+
+🚀 **New to n8n workflows?** Check out our [example workflow](examples/simple_n8n_workflow.json) for a complete working setup with OpenAI integration and attachment support!
+
 ## Installation
 
 ### HACS (Recommended)
@@ -65,6 +69,29 @@ Create an n8n workflow with the following structure:
 4. **Return Response**: Return a JSON response with your configured output field
 
 Note: For AI Tasks, the output value should adhere to the JSON schema provided in the `structure` field.
+
+#### Example Workflow
+
+For a quick start, you can use the provided example workflow that demonstrates a complete integration with OpenAI's GPT model and attachment support:
+
+📁 **[Simple n8n Workflow](examples/simple_n8n_workflow.json)**
+
+This example workflow includes:
+
+- **Webhook Trigger**: Receives POST requests from Home Assistant
+- **Extract Attachments**: JavaScript code node that processes binary attachments from AI Tasks
+- **OpenAI Integration**: GPT model integration with dynamic response format (text or JSON)
+- **AI Agent**: LangChain agent that handles the conversation and processes attachments
+- **Response Handler**: Returns the processed response back to Home Assistant
+
+**To use this example:**
+
+1. Download the [workflow file](examples/simple_n8n_workflow.json)
+2. Import it into your n8n instance (Settings → Import from file)
+3. Configure your OpenAI credentials in the "gpt-5-nano" node
+4. Update the model name to match your available OpenAI model
+5. Activate the workflow
+6. Copy the webhook URL and use it in your Home Assistant n8n conversation integration
 
 #### Input schema
 
