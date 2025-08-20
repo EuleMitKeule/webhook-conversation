@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 
+import anyio
 from voluptuous_openapi import convert
 
 from homeassistant.components import ai_task, conversation
@@ -14,6 +16,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import CONF_AI_TASK_WEBHOOK_URL
 from .entity import N8nEntity
+from .models import N8nBinaryObject
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +38,10 @@ class N8nAITaskEntity(N8nEntity, ai_task.AITaskEntity):
 
     _attr_has_entity_name = True
     _attr_name = None
-    _attr_supported_features = ai_task.AITaskEntityFeature.GENERATE_DATA
+    _attr_supported_features = (
+        ai_task.AITaskEntityFeature.GENERATE_DATA
+        | ai_task.AITaskEntityFeature.SUPPORT_ATTACHMENTS
+    )
 
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialize the entity."""
@@ -52,6 +58,22 @@ class N8nAITaskEntity(N8nEntity, ai_task.AITaskEntity):
         payload = self._build_payload(chat_log)
         payload["query"] = task.instructions
         payload["task_name"] = task.name
+
+        binary_objects: list[N8nBinaryObject] = []
+        if task.attachments:
+            for attachment in task.attachments:
+                async with await anyio.open_file(attachment.path, "rb") as f:
+                    attachment_bytes = await f.read()
+                    attachment_base64 = base64.b64encode(attachment_bytes).decode()
+                    binary_objects.append(
+                        N8nBinaryObject(
+                            name=attachment.media_content_id,
+                            path=attachment.path,
+                            mime_type=attachment.mime_type,
+                            data=attachment_base64,
+                        )
+                    )
+            payload["binary_objects"] = binary_objects
 
         if task.structure and task.structure.schema:
             payload["structure"] = convert(
