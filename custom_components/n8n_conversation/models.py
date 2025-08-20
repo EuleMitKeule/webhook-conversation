@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Literal, NotRequired, TypedDict
 
 MessageRole = Literal["assistant", "system", "tool_result", "user"]
@@ -12,6 +13,15 @@ class N8nMessage(TypedDict):
 
     role: MessageRole
     content: str
+
+
+class N8nBinaryObject(TypedDict):
+    """A single binary object sent to n8n."""
+
+    name: str
+    path: Path
+    mime_type: str
+    data: str
 
 
 class N8nPayload(TypedDict):
@@ -25,3 +35,4 @@ class N8nPayload(TypedDict):
     structure: NotRequired[dict[str, Any] | None]
     user_id: NotRequired[str | None]
     exposed_entities: NotRequired[str]
+    binary_objects: NotRequired[list[N8nBinaryObject]]

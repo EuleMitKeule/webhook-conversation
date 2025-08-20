@@ -54,7 +54,9 @@ class N8nEntity(Entity):
         session = async_get_clientsession(self.hass)
         client_timeout = aiohttp.ClientTimeout(total=timeout)
         async with session.post(
-            self._webhook_url, json=payload, timeout=client_timeout
+            self._webhook_url,
+            json=payload,
+            timeout=client_timeout,
         ) as response:
             if response.status != 200:
                 raise HomeAssistantError(

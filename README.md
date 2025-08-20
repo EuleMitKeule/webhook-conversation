@@ -16,6 +16,7 @@ _Integration to connect Home Assistant with n8n workflows through conversation a
 
 - 🤖 Use n8n workflows as conversation agents in Home Assistant
 - 🧩 AI Tasks via a dedicated webhook, supporting text or structured outputs
+- 📎 Support for file attachments in AI Tasks (images, documents, etc.)
 - 📡 Send conversation context and exposed entities to n8n webhooks
 - 🏠 Seamless integration with Home Assistant's voice assistant system
 - 🔧 Configurable webhook URLs and output fields
@@ -108,9 +109,20 @@ Note: For AI Tasks, the output value should adhere to the JSON schema provided i
   "query": "task instructions",
   "task_name": "task name",
   "extra_system_prompt": "optional additional system instructions",
-  "structure": "json schema for output"
+  "structure": "json schema for output",
+  "binary_objects": [
+    {
+      "name": "filename.jpg",
+      "path": "/path/to/file",
+      "mime_type": "image/jpeg",
+      "data": "base64_encoded_file_content"
+    }
+  ]
 }
 ```
+
+> [!NOTE]
+> The `binary_objects` field is only included when attachments are present in the AI task. The `structure` field is only included when a JSON schema is provided by the action call. The `task_name` field is only included for AI tasks when provided by the action call. Each attachment is converted to base64 format and includes metadata such as filename, file path, and MIME type.
 
 ## Usage
 
@@ -129,6 +141,39 @@ To use the n8n conversation agent with voice assistants, you need to create a vo
    - **Wake word**: Optionally configure a wake word engine
 4. Click **Create** to save your pipeline
 5. Set this pipeline as the default for voice assistants or assign it to specific devices
+
+## Attachment Support
+
+The n8n conversation integration supports file attachments in AI Tasks, allowing you to send images, documents, and other files to your n8n workflows for processing.
+
+### How Attachments Work
+
+When an AI Task includes attachments, they are automatically:
+
+- Read from the file system
+- Encoded as base64 strings
+- Included in the `binary_objects` field of the webhook payload
+
+### Attachment Data Structure
+
+Each attachment in the `binary_objects` array contains:
+
+- `name`: The filename or media content ID
+- `path`: The full file path on the system
+- `mime_type`: The MIME type of the file (e.g., "image/jpeg", "application/pdf")
+- `data`: The base64-encoded file content
+
+### Processing Attachments in n8n
+
+In your n8n workflow, you can process attachments by:
+
+1. **Accessing the binary_objects array**: Use `{{ $json.body.binary_objects }}` to access all attachments
+2. **Processing individual files**: Loop through the array or access specific attachments by index
+3. **Decoding base64 data**: Use the function node in the example workflow or your own custom code to decode the file content
+4. **File type handling**: Use the `mime_type` field to determine how to process different file types
+
+> [!TIP]
+> Attachment support is only available for AI Tasks, not regular conversation messages. Make sure your n8n workflow can handle payloads both with and without the `binary_objects` field.
 
 ## Contributing
 
