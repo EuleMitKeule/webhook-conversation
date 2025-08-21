@@ -79,7 +79,9 @@ class WebhookConversationEntity(
                 user_input.as_llm_context(DOMAIN),
                 None,
                 self._config_entry.options.get(CONF_PROMPT),
-                user_input.extra_system_prompt,
+                context=None,  # No context provided
+                prompt=self._config_entry.options.get(CONF_PROMPT),
+                extra_system_prompt=user_input.extra_system_prompt,
             )
         except conversation.ConverseError as err:
             return err.as_conversation_result()
