@@ -36,8 +36,8 @@ _Integration to connect Home Assistant conversation agents and AI features to ex
 
 1. Make sure [HACS](https://hacs.xyz/) is installed
 2. Add this repository as a custom repository in HACS:
-   - Go to HACS → Integrations → ⋮ → Custom repositories
-   - Add `https://github.com/eulemitkeule/webhook-conversation` as an Integration
+   - Go to HACS → ⋮ → Custom repositories
+   - Add `https://github.com/eulemitkeule/webhook-conversation` with type `Integration`
 3. Search for "Webhook Conversation" in HACS and install it
 4. Restart Home Assistant
 
