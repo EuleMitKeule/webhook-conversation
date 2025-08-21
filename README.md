@@ -56,10 +56,11 @@ _Integration to connect Home Assistant conversation agents and AI features to ex
 3. Configure the integration with:
    - **Name**: A friendly name for your webhook agent
    - **Webhook URL**: The URL of your webhook endpoint (remember to activate the workflow in n8n and to use the production webhook URL)
-   - **AI Task Webhook URL (optional)**: A separate webhook endpoint for AI Tasks
+   - **AI Task Webhook URL**: A separate webhook endpoint for AI Tasks
    - **Output Field**: The field name in the webhook response containing the reply (default: "output")
    - **Timeout**: The timeout in seconds for waiting for a response (default: 30 seconds, range: 1-300 seconds)
    - **Enable Response Streaming**: Enable real-time streaming of responses as they are generated (default: disabled)
+   - **System Prompt**: A custom system prompt to provide additional context or instructions to your AI model
 
 ### n8n Workflow Setup
 
@@ -120,7 +121,7 @@ This example workflow includes:
       "area_name": "Living Room"
     }
   ],
-  "extra_system_prompt": "optional additional system instructions",
+  "system_prompt": "optional additional system instructions",
   "stream": false
 }
 ```
@@ -138,7 +139,7 @@ This example workflow includes:
   ],
   "query": "task instructions",
   "task_name": "task name",
-  "extra_system_prompt": "optional additional system instructions",
+  "system_prompt": "optional additional system instructions",
   "structure": "json schema for output",
   "binary_objects": [
     {

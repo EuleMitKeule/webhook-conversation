@@ -19,6 +19,7 @@ from homeassistant.helpers.entity import Entity
 from .const import (
     CONF_ENABLE_STREAMING,
     CONF_OUTPUT_FIELD,
+    CONF_PROMPT,
     CONF_TIMEOUT,
     DEFAULT_ENABLE_STREAMING,
     DEFAULT_OUTPUT_FIELD,
@@ -126,11 +127,23 @@ class WebhookConversationBaseEntity(Entity):
         messages = [
             self._convert_content_to_param(content) for content in chat_log.content
         ]
+
+        configured_prompt = self._config_entry.options.get(CONF_PROMPT, "")
+        extra_prompt = chat_log.extra_system_prompt or ""
+
+        system_prompt = None
+        if configured_prompt and extra_prompt:
+            system_prompt = f"{configured_prompt}\n\n{extra_prompt}"
+        elif configured_prompt:
+            system_prompt = configured_prompt
+        elif extra_prompt:
+            system_prompt = extra_prompt
+
         return WebhookConversationPayload(
             {
                 "messages": messages,
                 "conversation_id": chat_log.conversation_id,
-                "extra_system_prompt": chat_log.extra_system_prompt,
+                "system_prompt": system_prompt,
                 "stream": self._streaming_enabled,
             }
         )

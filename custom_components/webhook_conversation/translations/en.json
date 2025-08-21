@@ -7,12 +7,29 @@
                     "webhook_url": "Webhook URL",
                     "ai_task_webhook_url": "AI task webhook URL",
                     "output_field": "Output Field",
-                    "timeout": "Timeout (seconds)"
+                    "prompt": "System Prompt",
+                    "timeout": "Timeout (seconds)",
+                    "enable_streaming": "Enable response streaming"
                 }
             }
         },
         "error": {
             "invalid_webhook_url": "Invalid Webhook URL (must start with 'http://' or 'https://')"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "name": "Name",
+                    "webhook_url": "Webhook URL",
+                    "ai_task_webhook_url": "AI task webhook URL",
+                    "output_field": "Output Field",
+                    "prompt": "System Prompt",
+                    "timeout": "Timeout (seconds)",
+                    "enable_streaming": "Enable response streaming"
+                }
+            }
         }
     }
 }

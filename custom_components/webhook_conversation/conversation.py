@@ -18,7 +18,7 @@ from homeassistant.helpers import (
 )
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import CONF_WEBHOOK_URL, DOMAIN
+from .const import CONF_PROMPT, CONF_WEBHOOK_URL, DOMAIN
 from .entity import WebhookConversationBaseEntity
 from .models import WebhookConversationPayload
 
@@ -75,7 +75,12 @@ class WebhookConversationEntity(
     ) -> conversation.ConversationResult:
         """Process the user input and call the API."""
         try:
-            await chat_log.async_provide_llm_data(user_input.as_llm_context(DOMAIN))
+            await chat_log.async_provide_llm_data(
+                user_input.as_llm_context(DOMAIN),
+                None,
+                self._config_entry.options.get(CONF_PROMPT),
+                user_input.extra_system_prompt,
+            )
         except conversation.ConverseError as err:
             return err.as_conversation_result()
 
