@@ -142,6 +142,8 @@ class WebhookConversationBaseEntity(Entity):
         return WebhookConversationMessage(
             {
                 "role": content.role,
-                "content": content.content,
+                "content": str(content.tool_result)
+                if isinstance(content, conversation.ToolResultContent)
+                else content.content,
             }
         )

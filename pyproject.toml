@@ -37,3 +37,7 @@ Issues = "https://github.com/eulemitkeule/webhook-conversation/issues"
 
 [dependency-groups]
 dev = ["mypy>=1.17.1", "ruff>=0.12.9"]
+
+[[tool.mypy.overrides]]
+module = ["voluptuous_openapi.*"]
+follow_untyped_imports = true

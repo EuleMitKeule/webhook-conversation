@@ -6,7 +6,7 @@ import logging
 from typing import Any, Literal
 
 from homeassistant.components import conversation
-from homeassistant.components.homeassistant import async_should_expose
+from homeassistant.components.homeassistant.exposed_entities import async_should_expose
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import MATCH_ALL
 from homeassistant.core import HomeAssistant
@@ -20,6 +20,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import CONF_WEBHOOK_URL, DOMAIN
 from .entity import WebhookConversationBaseEntity
+from .models import WebhookConversationPayload
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -126,7 +127,7 @@ class WebhookConversationEntity(
                 pass
 
     async def _transform_webhook_stream(
-        self, payload: dict[str, Any]
+        self, payload: WebhookConversationPayload
     ) -> AsyncIterator[conversation.AssistantContentDeltaDict]:
         """Transform webhook streaming content into HA format."""
         yield {"role": "assistant"}
@@ -150,9 +151,9 @@ class WebhookConversationEntity(
             entity_id = state.entity_id
             entity = entity_registry.async_get(entity_id)
 
-            aliases = []
+            aliases: list[str] = []
             if entity and entity.aliases:
-                aliases = entity.aliases
+                aliases = list(entity.aliases)
 
             area_id = None
             area_name = None
@@ -174,7 +175,7 @@ class WebhookConversationEntity(
                 {
                     "entity_id": entity_id,
                     "name": state.name,
-                    "state": self.hass.states.get(entity_id).state,
+                    "state": state.state,
                     "aliases": aliases,
                     "area_id": area_id,
                     "area_name": area_name,

@@ -153,7 +153,9 @@ class OptionsFlowHandler(OptionsFlow):
         """Initialize the options flow handler."""
         self.options = options
 
-    async def async_step_init(self, user_input: dict[str, Any] | None = None):
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """Handle initial step."""
 
         if user_input is None:
