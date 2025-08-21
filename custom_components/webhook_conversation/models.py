@@ -36,3 +36,4 @@ class WebhookConversationPayload(TypedDict):
     user_id: NotRequired[str | None]
     exposed_entities: NotRequired[str]
     binary_objects: NotRequired[list[WebhookConversationBinaryObject]]
+    stream: NotRequired[bool]

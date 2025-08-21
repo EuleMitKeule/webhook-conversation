@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Webhook Conversation",
+        "description": "Configure webhook conversation integration",
+        "data": {
+          "name": "Name",
+          "webhook_url": "Webhook URL",
+          "ai_task_webhook_url": "AI Task Webhook URL",
+          "output_field": "Output field name",
+          "timeout": "Request timeout (seconds)",
+          "enable_streaming": "Enable response streaming"
+        }
+      }
+    },
+    "error": {
+      "invalid_webhook_url": "Invalid webhook URL",
+      "unknown": "Unexpected error occurred"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure Webhook Conversation",
+        "description": "Configure options for webhook conversation",
+        "data": {
+          "name": "Name",
+          "webhook_url": "Webhook URL",
+          "ai_task_webhook_url": "AI Task Webhook URL",
+          "output_field": "Output field name",
+          "timeout": "Request timeout (seconds)",
+          "enable_streaming": "Enable response streaming"
+        }
+      }
+    }
+  }
+}

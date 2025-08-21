@@ -17,10 +17,12 @@ from homeassistant.core import callback
 
 from .const import (
     CONF_AI_TASK_WEBHOOK_URL,
+    CONF_ENABLE_STREAMING,
     CONF_NAME,
     CONF_OUTPUT_FIELD,
     CONF_TIMEOUT,
     CONF_WEBHOOK_URL,
+    DEFAULT_ENABLE_STREAMING,
     DEFAULT_NAME,
     DEFAULT_OUTPUT_FIELD,
     DEFAULT_TIMEOUT,
@@ -77,6 +79,15 @@ def _get_schema(options: dict[str, Any] | None = None) -> vol.Schema:
                 },
                 default=DEFAULT_TIMEOUT,
             ): vol.All(vol.Coerce(int), vol.Range(min=1, max=300)),
+            vol.Optional(
+                CONF_ENABLE_STREAMING,
+                description={
+                    "suggested_value": options.get(
+                        CONF_ENABLE_STREAMING, DEFAULT_ENABLE_STREAMING
+                    )
+                },
+                default=DEFAULT_ENABLE_STREAMING,
+            ): bool,
         }
     )
 

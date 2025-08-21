@@ -1,5 +1,6 @@
 """Conversation platform for webhook conversation integration."""
 
+from collections.abc import AsyncIterator
 import json
 import logging
 from typing import Any, Literal
@@ -108,15 +109,31 @@ class WebhookConversationEntity(
             self._get_exposed_entities(), default=set_default
         )
 
-        reply = await self._send_payload(payload)
-
-        async for _ in chat_log.async_add_assistant_content(
-            conversation.AssistantContent(
+        if self._streaming_enabled:
+            async for _ in chat_log.async_add_delta_content_stream(
                 self.entity_id,
-                reply,
-            )
-        ):
-            pass
+                self._transform_webhook_stream(payload),
+            ):
+                pass
+        else:
+            reply = await self._send_payload(payload)
+            async for _ in chat_log.async_add_assistant_content(
+                conversation.AssistantContent(
+                    self.entity_id,
+                    reply,
+                )
+            ):
+                pass
+
+    async def _transform_webhook_stream(
+        self, payload: dict[str, Any]
+    ) -> AsyncIterator[conversation.AssistantContentDeltaDict]:
+        """Transform webhook streaming content into HA format."""
+        yield {"role": "assistant"}
+
+        async for content_delta in self._send_payload_streaming(payload):
+            _LOGGER.debug("Webhook streaming response: %s", content_delta)
+            yield {"content": content_delta}
 
     def _get_exposed_entities(self) -> list[dict[str, Any]]:
         states = [
