@@ -78,9 +78,7 @@ def _get_schema(options: dict[str, Any] | None = None) -> vol.Schema:
             vol.Optional(
                 CONF_PROMPT,
                 description={
-                    "suggested_value": options.get(
-                        CONF_PROMPT, DEFAULT_PROMPT
-                    )
+                    "suggested_value": options.get(CONF_PROMPT, DEFAULT_PROMPT)
                 },
                 default=DEFAULT_PROMPT,
             ): TemplateSelector(),

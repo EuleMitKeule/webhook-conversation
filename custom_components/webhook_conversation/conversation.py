@@ -18,7 +18,7 @@ from homeassistant.helpers import (
 )
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import CONF_PROMPT, CONF_WEBHOOK_URL, DOMAIN
+from .const import CONF_WEBHOOK_URL, DOMAIN
 from .entity import WebhookConversationBaseEntity
 from .models import WebhookConversationPayload
 
@@ -77,11 +77,9 @@ class WebhookConversationEntity(
         try:
             await chat_log.async_provide_llm_data(
                 user_input.as_llm_context(DOMAIN),
-                None,
-                self._config_entry.options.get(CONF_PROMPT),
-                context=None,  # No context provided
-                prompt=self._config_entry.options.get(CONF_PROMPT),
-                extra_system_prompt=user_input.extra_system_prompt,
+                user_llm_hass_api=None,
+                user_llm_prompt=self._system_prompt,
+                user_extra_system_prompt=user_input.extra_system_prompt,
             )
         except conversation.ConverseError as err:
             return err.as_conversation_result()
@@ -98,9 +96,9 @@ class WebhookConversationEntity(
         """Send the chat log to the webhook and process the response."""
         payload = self._build_payload(chat_log)
         user_messages = [
-            user_message
-            for user_message in payload["messages"]
-            if user_message["role"] == "user"
+            self._convert_content_to_param(user_message)
+            for user_message in chat_log.content
+            if isinstance(user_message, conversation.UserContent)
         ]
 
         if not user_messages:
