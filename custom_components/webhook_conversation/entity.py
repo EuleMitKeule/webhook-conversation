@@ -137,7 +137,7 @@ class WebhookConversationBaseEntity(Entity):
         elif configured_prompt:
             system_prompt = configured_prompt
         elif extra_prompt:
-            system_prompt = extra_prompt
+        system_prompt = "\n\n".join(filter(None, [configured_prompt, extra_prompt])) or None
 
         return WebhookConversationPayload(
             {
