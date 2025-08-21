@@ -25,8 +25,9 @@ classifiers = [
 ]
 description = "A custom component for Home Assistant to use webhooks for conversation and AI features."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13.2"
 version = "0.0.0"
+dependencies = ["homeassistant>=2025.8.0"]
 
 [project.urls]
 Repository = "https://github.com/eulemitkeule/webhook-conversation"
@@ -35,7 +36,4 @@ Changelog = "https://github.com/EuleMitKeule/webhook-conversation/releases"
 Issues = "https://github.com/eulemitkeule/webhook-conversation/issues"
 
 [dependency-groups]
-dev = [
-    "mypy>=1.17.1",
-    "ruff>=0.12.9",
-]
+dev = ["mypy>=1.17.1", "ruff>=0.12.9"]
