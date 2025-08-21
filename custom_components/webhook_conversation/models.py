@@ -30,7 +30,7 @@ class WebhookConversationPayload(TypedDict):
     conversation_id: str
     messages: list[WebhookConversationMessage]
     query: NotRequired[str | None]
-    extra_system_prompt: NotRequired[str | None]
+    system_prompt: NotRequired[str | None]
     task_name: NotRequired[str | None]
     structure: NotRequired[dict[str, Any] | None]
     user_id: NotRequired[str | None]

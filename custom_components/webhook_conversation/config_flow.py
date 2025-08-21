@@ -14,17 +14,20 @@ from homeassistant.config_entries import (
     OptionsFlow,
 )
 from homeassistant.core import callback
+from homeassistant.helpers.selector import TemplateSelector
 
 from .const import (
     CONF_AI_TASK_WEBHOOK_URL,
     CONF_ENABLE_STREAMING,
     CONF_NAME,
     CONF_OUTPUT_FIELD,
+    CONF_PROMPT,
     CONF_TIMEOUT,
     CONF_WEBHOOK_URL,
     DEFAULT_ENABLE_STREAMING,
     DEFAULT_NAME,
     DEFAULT_OUTPUT_FIELD,
+    DEFAULT_PROMPT,
     DEFAULT_TIMEOUT,
     DEFAULT_WEBHOOK_URL,
     DOMAIN,
@@ -72,6 +75,13 @@ def _get_schema(options: dict[str, Any] | None = None) -> vol.Schema:
                 },
                 default=DEFAULT_OUTPUT_FIELD,
             ): str,
+            vol.Optional(
+                CONF_PROMPT,
+                description={
+                    "suggested_value": options.get(CONF_PROMPT, DEFAULT_PROMPT)
+                },
+                default=DEFAULT_PROMPT,
+            ): TemplateSelector(),
             vol.Optional(
                 CONF_TIMEOUT,
                 description={

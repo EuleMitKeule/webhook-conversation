@@ -9,6 +9,7 @@
           "webhook_url": "Webhook URL",
           "ai_task_webhook_url": "AI Task Webhook URL",
           "output_field": "Output field name",
+          "prompt": "System Prompt",
           "timeout": "Request timeout (seconds)",
           "enable_streaming": "Enable response streaming"
         }
@@ -29,6 +30,7 @@
           "webhook_url": "Webhook URL",
           "ai_task_webhook_url": "AI Task Webhook URL",
           "output_field": "Output field name",
+          "prompt": "System Prompt",
           "timeout": "Request timeout (seconds)",
           "enable_streaming": "Enable response streaming"
         }

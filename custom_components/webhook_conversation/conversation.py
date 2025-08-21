@@ -75,7 +75,12 @@ class WebhookConversationEntity(
     ) -> conversation.ConversationResult:
         """Process the user input and call the API."""
         try:
-            await chat_log.async_provide_llm_data(user_input.as_llm_context(DOMAIN))
+            await chat_log.async_provide_llm_data(
+                user_input.as_llm_context(DOMAIN),
+                user_llm_hass_api=None,
+                user_llm_prompt=self._system_prompt,
+                user_extra_system_prompt=user_input.extra_system_prompt,
+            )
         except conversation.ConverseError as err:
             return err.as_conversation_result()
 
@@ -91,9 +96,9 @@ class WebhookConversationEntity(
         """Send the chat log to the webhook and process the response."""
         payload = self._build_payload(chat_log)
         user_messages = [
-            user_message
-            for user_message in payload["messages"]
-            if user_message["role"] == "user"
+            self._convert_content_to_param(user_message)
+            for user_message in chat_log.content
+            if isinstance(user_message, conversation.UserContent)
         ]
 
         if not user_messages:

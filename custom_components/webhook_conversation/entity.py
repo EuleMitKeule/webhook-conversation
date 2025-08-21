@@ -19,6 +19,7 @@ from homeassistant.helpers.entity import Entity
 from .const import (
     CONF_ENABLE_STREAMING,
     CONF_OUTPUT_FIELD,
+    CONF_PROMPT,
     CONF_TIMEOUT,
     DEFAULT_ENABLE_STREAMING,
     DEFAULT_OUTPUT_FIELD,
@@ -40,6 +41,7 @@ class WebhookConversationBaseEntity(Entity):
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialize base properties shared by webhook conversation entities."""
         self._config_entry = config_entry
+        self._system_prompt = config_entry.options[CONF_PROMPT]
         self._streaming_enabled: bool = config_entry.options.get(
             CONF_ENABLE_STREAMING, DEFAULT_ENABLE_STREAMING
         )
@@ -123,14 +125,20 @@ class WebhookConversationBaseEntity(Entity):
         self, chat_log: conversation.ChatLog
     ) -> WebhookConversationPayload:
         """Create a base payload from the chat log for webhook calls."""
+        system_message = chat_log.content[0]
+        if not isinstance(system_message, conversation.SystemContent):
+            raise TypeError("First message must be a system message")
+
         messages = [
-            self._convert_content_to_param(content) for content in chat_log.content
+            self._convert_content_to_param(content)
+            for content in chat_log.content[1:-1]
         ]
+
         return WebhookConversationPayload(
             {
                 "messages": messages,
                 "conversation_id": chat_log.conversation_id,
-                "extra_system_prompt": chat_log.extra_system_prompt,
+                "system_prompt": system_message.content,
                 "stream": self._streaming_enabled,
             }
         )
