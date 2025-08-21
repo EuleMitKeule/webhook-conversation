@@ -33,3 +33,9 @@ Repository = "https://github.com/eulemitkeule/webhook-conversation"
 Documentation = "https://github.com/eulemitkeule/webhook-conversation/blob/master/README.md"
 Changelog = "https://github.com/EuleMitKeule/webhook-conversation/releases"
 Issues = "https://github.com/eulemitkeule/webhook-conversation/issues"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.17.1",
+    "ruff>=0.12.9",
+]
