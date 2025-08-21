@@ -38,7 +38,7 @@ async def async_setup_entry(
 
 class WebhookConversationEntity(
     conversation.ConversationEntity,
-    conversation.AbstractConversationAgent,
+    conversation.models.AbstractConversationAgent,
     WebhookConversationBaseEntity,
 ):
     """Webhook conversation agent."""
