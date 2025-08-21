@@ -99,15 +99,5 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-        with:
-          python-version: 3.13
-          enable-cache: true
-          cache-suffix: uv-${{ runner.os }}-3.13
-
-      - name: Install dependecies
-        run: uv sync --all-groups
-
       - name: Run Hassfest
         uses: home-assistant/actions/hassfest@master
