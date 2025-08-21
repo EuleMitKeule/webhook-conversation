@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 from collections.abc import AsyncGenerator
 import json
 import logging
@@ -17,14 +18,19 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 
 from .const import (
+    CONF_AUTH_TYPE,
     CONF_ENABLE_STREAMING,
     CONF_OUTPUT_FIELD,
+    CONF_PASSWORD,
     CONF_PROMPT,
     CONF_TIMEOUT,
+    CONF_USERNAME,
+    DEFAULT_AUTH_TYPE,
     DEFAULT_ENABLE_STREAMING,
     DEFAULT_OUTPUT_FIELD,
     DEFAULT_TIMEOUT,
     DOMAIN,
+    AuthType,
 )
 from .models import WebhookConversationMessage, WebhookConversationPayload
 
@@ -45,12 +51,33 @@ class WebhookConversationBaseEntity(Entity):
         self._streaming_enabled: bool = config_entry.options.get(
             CONF_ENABLE_STREAMING, DEFAULT_ENABLE_STREAMING
         )
+        self._auth_type = config_entry.options.get(CONF_AUTH_TYPE, DEFAULT_AUTH_TYPE)
         self._attr_device_info = dr.DeviceInfo(
             identifiers={(DOMAIN, config_entry.entry_id)},
             name=config_entry.title,
             manufacturer="webhook-conversation",
             entry_type=dr.DeviceEntryType.SERVICE,
         )
+
+    def _get_auth_headers(self) -> dict[str, str]:
+        """Get authentication headers based on configured auth type."""
+        headers = {"Content-Type": "application/json"}
+
+        if self._auth_type == AuthType.BASIC:
+            username = self._config_entry.options.get(CONF_USERNAME, "")
+            password = self._config_entry.options.get(CONF_PASSWORD, "")
+
+            if username and password:
+                credentials = base64.b64encode(
+                    f"{username}:{password}".encode()
+                ).decode()
+                headers["Authorization"] = f"Basic {credentials}"
+            else:
+                _LOGGER.warning(
+                    "Basic authentication configured but credentials missing"
+                )
+
+        return headers
 
     async def _send_payload(self, payload: WebhookConversationPayload) -> Any:
         """Send the payload to the webhook."""
@@ -62,9 +89,12 @@ class WebhookConversationBaseEntity(Entity):
         timeout = self._config_entry.options.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
         session = async_get_clientsession(self.hass)
         client_timeout = aiohttp.ClientTimeout(total=timeout)
+        headers = self._get_auth_headers()
+
         async with session.post(
             self._webhook_url,
             json=payload,
+            headers=headers,
             timeout=client_timeout,
         ) as response:
             if response.status != 200:
@@ -91,10 +121,12 @@ class WebhookConversationBaseEntity(Entity):
         timeout = self._config_entry.options.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
         session = async_get_clientsession(self.hass)
         client_timeout = aiohttp.ClientTimeout(total=timeout)
+        headers = self._get_auth_headers()
 
         async with session.post(
             self._webhook_url,
             json=payload,
+            headers=headers,
             timeout=client_timeout,
         ) as response:
             if response.status != 200:
