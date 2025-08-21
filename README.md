@@ -156,6 +156,36 @@ This example workflow includes:
 > [!NOTE]
 > The `binary_objects` field is only included when attachments are present in the AI task. The `structure` field is only included when a JSON schema is provided by the action call. The `task_name` field is only included for AI tasks when provided by the action call. Each attachment is converted to base64 format and includes metadata such as filename, file path, and MIME type.
 
+## Authentication
+
+The webhook conversation integration supports **basic HTTP authentication** for secure communication with your webhook endpoints. This ensures that only authorized requests can access your n8n workflows or other webhook services.
+
+### Configuration
+
+To enable basic HTTP authentication:
+
+1. In the integration configuration, provide:
+   - **Username**: Your HTTP authentication username
+   - **Password**: Your HTTP authentication password
+2. The integration will automatically include the proper authentication headers in all requests to your webhook URLs
+
+### n8n Authentication Setup
+
+For n8n workflows, you can secure your webhook endpoints by:
+
+1. **In your n8n workflow**:
+   - Open the Webhook Trigger node
+   - Go to the "Settings" tab
+   - Under "Authentication", select "Basic Auth"
+   - Set your desired username and password via the credential property
+
+2. **In Home Assistant**:
+   - Use the same username and password in your webhook conversation integration configuration
+   - The integration will automatically authenticate with your secured n8n webhook
+
+> [!IMPORTANT]
+> Basic HTTP authentication credentials are transmitted with every request. Always use HTTPS to ensure credentials are encrypted in transit.
+
 ## Usage
 
 ### Voice Assistant Pipeline Setup

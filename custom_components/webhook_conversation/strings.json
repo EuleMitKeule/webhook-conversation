@@ -11,12 +11,22 @@
           "output_field": "Output field name",
           "prompt": "System Prompt",
           "timeout": "Request timeout (seconds)",
-          "enable_streaming": "Enable response streaming"
+          "enable_streaming": "Enable response streaming",
+          "auth_type": "Authentication type"
+        }
+      },
+      "auth": {
+        "title": "Authentication Configuration",
+        "description": "Configure authentication for webhook requests",
+        "data": {
+          "username": "Username",
+          "password": "Password"
         }
       }
     },
     "error": {
       "invalid_webhook_url": "Invalid webhook URL",
+      "invalid_auth": "Invalid authentication credentials",
       "unknown": "Unexpected error occurred"
     }
   },
@@ -32,8 +42,25 @@
           "output_field": "Output field name",
           "prompt": "System Prompt",
           "timeout": "Request timeout (seconds)",
-          "enable_streaming": "Enable response streaming"
+          "enable_streaming": "Enable response streaming",
+          "auth_type": "Authentication type"
         }
+      },
+      "auth": {
+        "title": "Authentication Configuration",
+        "description": "Configure authentication for webhook requests",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      }
+    }
+  },
+  "selector": {
+    "auth_type": {
+      "options": {
+        "none": "No authentication",
+        "basic_auth": "Basic HTTP authentication"
       }
     }
   }
