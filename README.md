@@ -38,7 +38,7 @@ _Integration to connect Home Assistant conversation agents and AI features to ex
 2. Add this repository as a custom repository in HACS:
    - Go to HACS → Integrations → ⋮ → Custom repositories
    - Add `https://github.com/eulemitkeule/webhook-conversation` as an Integration
-3. Search for "n8n Conversation" in HACS and install it
+3. Search for "Webhook Conversation" in HACS and install it
 4. Restart Home Assistant
 
 ### Manual Installation
@@ -59,7 +59,7 @@ _Integration to connect Home Assistant conversation agents and AI features to ex
    - **AI Task Webhook URL (optional)**: A separate webhook endpoint for AI Tasks
    - **Output Field**: The field name in the webhook response containing the reply (default: "output")
    - **Timeout**: The timeout in seconds for waiting for a response (default: 30 seconds, range: 1-300 seconds)
-   - **Enable Response Streaming (optional)**: Enable real-time streaming of responses as they are generated (default: disabled)
+   - **Enable Response Streaming**: Enable real-time streaming of responses as they are generated (default: disabled)
 
 ### n8n Workflow Setup
 
