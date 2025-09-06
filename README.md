@@ -6,7 +6,7 @@
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/eulemitkeule?logo=GitHub-Sponsors)
 
 > [!NOTE]
-> This integration requires Home Assistant `2025.8`.
+> This integration requires Home Assistant `>=2025.8`.
 
 _Integration to connect Home Assistant conversation agents and AI features to external systems through webhooks._
 
