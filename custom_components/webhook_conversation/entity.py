@@ -172,6 +172,7 @@ class WebhookConversationBaseEntity(Entity):
                 "conversation_id": chat_log.conversation_id,
                 "system_prompt": system_message.content,
                 "stream": self._streaming_enabled,
+                "query": "",
             }
         )
 
