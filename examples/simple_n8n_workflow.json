@@ -1,149 +1,150 @@
 {
-    "nodes": [
-        {
-            "parameters": {
-                "model": {
-                    "__rl": true,
-                    "value": "gpt-4o-mini",
-                    "mode": "list",
-                    "cachedResultName": "gpt-4o-mini"
-                },
-                "options": {
-                    "responseFormat": "={{ ($json.body && $json.body.structure != null) ? 'json_object' : 'text' }}"
-                }
-            },
-            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-            "typeVersion": 1.2,
-            "position": [
-                192,
-                96
-            ],
-            "id": "08897615-add4-49dd-9f75-e066abe4ce91",
-            "name": "OpenAI Chat Model",
-            "credentials": {
-                "openAiApi": {
-                    "id": "wPtEzytsyQHnTsV2",
-                    "name": "OpenAi account"
-                }
-            }
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
         },
-        {
-            "parameters": {
-                "promptType": "define",
-                "text": "={{ $json.body.query }}",
-                "options": {
-                    "systemMessage": "={{ $json.body.system_prompt }}\n{{ $json.body && $json.body.structure != null ? \"You must return the final answer strictly as JSON that conforms to the following schema: \" + JSON.stringify($json.body.structure) : \"\" }}",
-                    "passthroughBinaryImages": true,
-                    "enableStreaming": "={{ $json.body.stream }}"
-                }
-            },
-            "type": "@n8n/n8n-nodes-langchain.agent",
-            "typeVersion": 2.2,
-            "position": [
-                288,
-                -96
-            ],
-            "id": "067cd63e-55be-4c7b-a233-bdd172de2dd5",
-            "name": "Agent"
-        },
-        {
-            "parameters": {
-                "jsCode": "const src = items[0].json;\nconst list = Array.isArray(src?.body?.binary_objects) ? src.body.binary_objects : [];\n\nfunction stripPrefix(val){ return String(val ?? '').replace(/^data:.*?;base64,/, ''); }\nfunction baseName(p){ const s=String(p??''); const a=s.split('/').pop(); const b=s.split('\\\\').pop(); return (a&&a.length<=s.length?a:b)||''; }\nfunction safeKey(name,i){ const k=String(name??'').trim().toLowerCase().replace(/[^a-z0-9_\\-]/g,'_'); return k||`data${i}`; }\n\n// If no binaries present: pass JSON through 1:1 (no binary prop)\nif (!list.length) {\n  return [{ json: src }];\n}\n\n// Else: emit one item per binary, JSON untouched\nreturn list.map((bo, i) => {\n  const key = safeKey(bo?.name, i);\n  return {\n    json: src, // unchanged\n    binary: {\n      [key]: {\n        data: stripPrefix(bo?.data),            // base64 string (not Buffer)\n        fileName: baseName(bo?.path) || key,\n        mimeType: bo?.mime_type || 'application/octet-stream',\n      },\n    },\n  };\n});\n"
-            },
-            "type": "n8n-nodes-base.code",
-            "typeVersion": 2,
-            "position": [
-                64,
-                -96
-            ],
-            "id": "3074b6d0-daeb-41a7-b07d-9ca04989e253",
-            "name": "Extract attachments"
-        },
-        {
-            "parameters": {
-                "httpMethod": "POST",
-                "path": "agent",
-                "responseMode": "streaming",
-                "options": {}
-            },
-            "type": "n8n-nodes-base.webhook",
-            "typeVersion": 2.1,
-            "position": [
-                -160,
-                -96
-            ],
-            "id": "d6cb88e7-5273-4f69-9291-85545e50d305",
-            "name": "Webhook",
-            "webhookId": "cebf2e3f-6b65-4f94-beaa-0f749996e337"
-        },
-        {
-            "parameters": {
-                "sessionIdType": "customKey",
-                "sessionKey": "={{ $json.body.conversation_id }}"
-            },
-            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-            "typeVersion": 1.3,
-            "position": [
-                352,
-                96
-            ],
-            "id": "881a1f54-0edc-4b8f-b923-e03d8d34922a",
-            "name": "Simple Memory"
+        "options": {
+          "responseFormat": "={{ ($json.body && $json.body.structure != null) ? 'json_object' : 'text' }}"
         }
-    ],
-    "connections": {
-        "OpenAI Chat Model": {
-            "ai_languageModel": [
-                [
-                    {
-                        "node": "Agent",
-                        "type": "ai_languageModel",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Agent": {
-            "main": [
-                []
-            ]
-        },
-        "Extract attachments": {
-            "main": [
-                [
-                    {
-                        "node": "Agent",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Webhook": {
-            "main": [
-                [
-                    {
-                        "node": "Extract attachments",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Simple Memory": {
-            "ai_memory": [
-                [
-                    {
-                        "node": "Agent",
-                        "type": "ai_memory",
-                        "index": 0
-                    }
-                ]
-            ]
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        96
+      ],
+      "id": "08897615-add4-49dd-9f75-e066abe4ce91",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "wPtEzytsyQHnTsV2",
+          "name": "OpenAi account"
         }
+      }
     },
-    "pinData": {},
-    "meta": {
-        "instanceId": "fac97a43284b2c7e834ae31b61acaecce7a1a7c9f9c28473ca61f99fd163ba9b"
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.query }}",
+        "options": {
+          "systemMessage": "={{ $json.body.system_prompt }}\n{{ $json.body && $json.body.structure != null ? \"You must return the final answer strictly as JSON that conforms to the following schema: \" + JSON.stringify($json.body.structure) : \"\" }}",
+          "passthroughBinaryImages": true,
+          "enableStreaming": "={{ $json.body.stream }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        -96
+      ],
+      "id": "067cd63e-55be-4c7b-a233-bdd172de2dd5",
+      "name": "Agent"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agent",
+        "responseMode": "streaming",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        -96
+      ],
+      "id": "d6cb88e7-5273-4f69-9291-85545e50d305",
+      "name": "Webhook",
+      "webhookId": "cebf2e3f-6b65-4f94-beaa-0f749996e337"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.conversation_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        96
+      ],
+      "id": "881a1f54-0edc-4b8f-b923-e03d8d34922a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (JavaScript) — Split binary_objects then merge into one item\n\nif (!items || items.length === 0) {\n  return [];\n}\n\nconst originalJson = items[0].json ?? {};\nconst binaryList = Array.isArray(originalJson?.body?.binary_objects)\n  ? originalJson.body.binary_objects\n  : [];\n\n/** Remove any data:...;base64, prefix from a base64 string */\nfunction stripDataUrlPrefix(value) {\n  return String(value ?? '').replace(/^data:.*?;base64,/, '');\n}\n\n/** Cross-platform basename */\nfunction getBaseName(pathValue) {\n  const s = String(pathValue ?? '');\n  const slash = s.split('/').pop();\n  const backslash = s.split('\\\\').pop();\n  return (slash && slash.length <= s.length ? slash : backslash) || '';\n}\n\n/** Sanitize a key; fallback to data<index> if empty */\nfunction makeSafeKey(name, index) {\n  const cleaned = String(name ?? '')\n    .trim()\n    .toLowerCase()\n    .replace(/[^a-z0-9_\\-]/g, '_');\n  return cleaned || `data${index}`;\n}\n\nconst mergedBinary = {};\n\n// If there are binaries, collect them all into a single `binary` object\nif (binaryList.length > 0) {\n  for (let i = 0; i < binaryList.length; i++) {\n    const binaryObject = binaryList[i];\n\n    const desiredKey = makeSafeKey(binaryObject?.name, i);\n    let finalKey = desiredKey;\n    if (mergedBinary[finalKey]) {\n      finalKey = `${finalKey}__${i}`; // avoid overwriting on collision\n    }\n\n    mergedBinary[finalKey] = {\n      data: stripDataUrlPrefix(binaryObject?.data),\n      fileName: getBaseName(binaryObject?.path) || desiredKey,\n      mimeType: binaryObject?.mime_type || 'application/octet-stream',\n    };\n  }\n}\n\n// Match the merger node: keep first JSON and add _sources reflecting the (virtual) split count\nconst outputJson = {\n  ...(originalJson ?? {}),\n  _sources:\n    binaryList.length > 0\n      ? Array.from({ length: binaryList.length }, (_, i) => ({ index: i, ...(originalJson ?? {}) }))\n      : [{ index: 0, ...(originalJson ?? {}) }],\n};\n\n// If no binaries existed, keep an empty `binary` object (merger node behavior)\nreturn [\n  {\n    json: outputJson,\n    binary: mergedBinary,\n  },\n];\n"
+      },
+      "id": "8930a0a0-57eb-4794-b409-2eb1bd8ba21f",
+      "name": "Handle Attachments",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        128,
+        -96
+      ],
+      "typeVersion": 1
     }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Handle Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Attachments": {
+      "main": [
+        [
+          {
+            "node": "Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fac97a43284b2c7e834ae31b61acaecce7a1a7c9f9c28473ca61f99fd163ba9b"
+  }
 }
