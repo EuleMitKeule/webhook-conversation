@@ -104,6 +104,14 @@ This example workflow includes:
 {
   "conversation_id": "abc123",
   "user_id": "user id from ha",
+  "language": "de-DE",
+  "agent_id": "conversation.webhook_agent",
+  "device_id": "satellite_device_id",
+  "device_info": {
+    "name": "Kitchen Voice Satellite",
+    "manufacturer": "Raspberry Pi",
+    "model": "Pi 4B"
+  },
   "messages": [
     {
       "role": "assistant|system|tool_result|user",
@@ -154,7 +162,9 @@ This example workflow includes:
 ```
 
 > [!NOTE]
-> The `binary_objects` field is only included when attachments are present in the AI task. The `structure` field is only included when a JSON schema is provided by the action call. The `task_name` field is only included for AI tasks when provided by the action call. Each attachment is converted to base64 format and includes metadata such as filename, file path, and MIME type.
+> For **conversations**: The `device_id` and `device_info` fields are only set when the conversation was initiated via a voice satellite. The `language` field contains the language code (e.g., "de-DE") configured for the conversation. The `agent_id` field contains the entity ID of the conversation agent.
+>
+> For **AI tasks**: The `binary_objects` field is only included when attachments are present in the AI task. The `structure` field is only included when a JSON schema is provided by the action call. The `task_name` field is only included for AI tasks when provided by the action call. Each attachment is converted to base64 format and includes metadata such as filename, file path, and MIME type.
 
 ## Authentication
 

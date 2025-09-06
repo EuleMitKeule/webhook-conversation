@@ -27,13 +27,22 @@ class WebhookConversationBinaryObject(TypedDict):
 class WebhookConversationPayload(TypedDict):
     """Base payload shared by webhook calls."""
 
+    # common fields
     conversation_id: str
     messages: list[WebhookConversationMessage]
-    query: NotRequired[str | None]
-    system_prompt: NotRequired[str | None]
-    task_name: NotRequired[str | None]
-    structure: NotRequired[dict[str, Any] | None]
-    user_id: NotRequired[str | None]
+    query: str
+    system_prompt: str
+    stream: bool
+
+    # conversation fields
+    agent_id: NotRequired[str]
+    device_id: NotRequired[str | None]
+    device_info: NotRequired[dict[str, Any] | None]
     exposed_entities: NotRequired[str]
+    language: NotRequired[str]
+    user_id: NotRequired[str | None]
+
+    # task fields
     binary_objects: NotRequired[list[WebhookConversationBinaryObject]]
-    stream: NotRequired[bool]
+    structure: NotRequired[dict[str, Any] | None]
+    task_name: NotRequired[str | None]

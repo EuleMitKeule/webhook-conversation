@@ -109,11 +109,25 @@ class WebhookConversationEntity(
                 return list(obj)
             return obj
 
-        payload["user_id"] = user_input.context.user_id
+        device_registry = dr.async_get(self.hass)
+
         payload["query"] = user_messages[-1]["content"]
+        payload["agent_id"] = user_input.agent_id
+        payload["device_id"] = user_input.device_id
+        payload["device_info"] = (
+            (
+                device.dict_repr
+                if (device := device_registry.async_get(user_input.device_id))
+                else None
+            )
+            if user_input.device_id
+            else None
+        )
         payload["exposed_entities"] = json.dumps(
             self._get_exposed_entities(), default=set_default
         )
+        payload["language"] = user_input.language
+        payload["user_id"] = user_input.context.user_id
 
         if self._streaming_enabled:
             async for _ in chat_log.async_add_delta_content_stream(
