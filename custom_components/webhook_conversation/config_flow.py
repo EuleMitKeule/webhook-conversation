@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, cast
 
 import voluptuous as vol
 
@@ -14,12 +14,15 @@ from homeassistant.config_entries import (
     ConfigSubentryFlow,
     SubentryFlowResult,
 )
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.selector import (
     SelectSelector,
     SelectSelectorConfig,
     TemplateSelector,
+    TextSelector,
+    TextSelectorConfig,
 )
+from homeassistant.util import language as language_util
 
 from .const import (
     CONF_AUTH_TYPE,
@@ -28,8 +31,10 @@ from .const import (
     CONF_OUTPUT_FIELD,
     CONF_PASSWORD,
     CONF_PROMPT,
+    CONF_SUPPORTED_LANGUAGES,
     CONF_TIMEOUT,
     CONF_USERNAME,
+    CONF_VOICES,
     CONF_WEBHOOK_URL,
     DEFAULT_AI_TASK_NAME,
     DEFAULT_AUTH_TYPE,
@@ -37,11 +42,14 @@ from .const import (
     DEFAULT_ENABLE_STREAMING,
     DEFAULT_OUTPUT_FIELD,
     DEFAULT_PROMPT,
+    DEFAULT_SUPPORTED_LANGUAGES,
     DEFAULT_TIMEOUT,
+    DEFAULT_TTS_NAME,
     DOMAIN,
     MANUFACTURER,
     RECOMMENDED_AI_TASK_OPTIONS,
     RECOMMENDED_CONVERSATION_OPTIONS,
+    RECOMMENDED_TTS_OPTIONS,
     AuthType,
 )
 
@@ -49,7 +57,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def _get_subentry_schema(
-    subentry_type: str, options: dict[str, Any] | None = None, is_new: bool = True
+    subentry_type: str,
+    options: dict[str, Any] | None = None,
+    is_new: bool = True,
+    hass: HomeAssistant | None = None,
 ) -> vol.Schema:
     """Return the subentry configuration schema."""
     if options is None:
@@ -60,8 +71,12 @@ def _get_subentry_schema(
     if is_new:
         if subentry_type == "conversation":
             default_name = DEFAULT_CONVERSATION_NAME
-        else:
+        elif subentry_type == "ai_task":
             default_name = DEFAULT_AI_TASK_NAME
+        elif subentry_type == "tts":
+            default_name = DEFAULT_TTS_NAME
+        else:
+            raise ValueError(f"Unknown subentry type: {subentry_type}")
 
         schema_dict[vol.Required(CONF_NAME, default=default_name)] = str
 
@@ -73,37 +88,12 @@ def _get_subentry_schema(
                 default=None,
             ): str,
             vol.Optional(
-                CONF_OUTPUT_FIELD,
-                description={
-                    "suggested_value": options.get(
-                        CONF_OUTPUT_FIELD, DEFAULT_OUTPUT_FIELD
-                    )
-                },
-                default=DEFAULT_OUTPUT_FIELD,
-            ): str,
-            vol.Optional(
-                CONF_PROMPT,
-                description={
-                    "suggested_value": options.get(CONF_PROMPT, DEFAULT_PROMPT)
-                },
-                default=DEFAULT_PROMPT,
-            ): TemplateSelector(),
-            vol.Optional(
                 CONF_TIMEOUT,
                 description={
                     "suggested_value": options.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
                 },
                 default=DEFAULT_TIMEOUT,
             ): vol.All(vol.Coerce(int), vol.Range(min=1, max=300)),
-            vol.Optional(
-                CONF_ENABLE_STREAMING,
-                description={
-                    "suggested_value": options.get(
-                        CONF_ENABLE_STREAMING, DEFAULT_ENABLE_STREAMING
-                    )
-                },
-                default=DEFAULT_ENABLE_STREAMING,
-            ): bool,
             vol.Required(
                 CONF_AUTH_TYPE,
                 description={
@@ -118,6 +108,60 @@ def _get_subentry_schema(
             ),
         }
     )
+
+    if subentry_type in ("conversation", "ai_task"):
+        schema_dict.update(
+            {
+                vol.Required(
+                    CONF_OUTPUT_FIELD,
+                    description={
+                        "suggested_value": options.get(
+                            CONF_OUTPUT_FIELD, DEFAULT_OUTPUT_FIELD
+                        )
+                    },
+                    default=DEFAULT_OUTPUT_FIELD,
+                ): str,
+                vol.Optional(
+                    CONF_PROMPT,
+                    description={
+                        "suggested_value": options.get(CONF_PROMPT, DEFAULT_PROMPT)
+                    },
+                    default=DEFAULT_PROMPT,
+                ): TemplateSelector(),
+                vol.Optional(
+                    CONF_ENABLE_STREAMING,
+                    description={
+                        "suggested_value": options.get(
+                            CONF_ENABLE_STREAMING, DEFAULT_ENABLE_STREAMING
+                        )
+                    },
+                    default=DEFAULT_ENABLE_STREAMING,
+                ): bool,
+            }
+        )
+    elif subentry_type == "tts":
+        default_languages = options.get(
+            CONF_SUPPORTED_LANGUAGES, DEFAULT_SUPPORTED_LANGUAGES
+        )
+
+        schema_dict.update(
+            {
+                vol.Required(
+                    CONF_SUPPORTED_LANGUAGES,
+                    description={"suggested_value": default_languages},
+                    default=default_languages,
+                ): TextSelector(
+                    TextSelectorConfig(
+                        multiple=True,
+                    )
+                ),
+                vol.Optional(
+                    CONF_VOICES,
+                    description={"suggested_value": options.get(CONF_VOICES, [])},
+                    default=[],
+                ): TextSelector(TextSelectorConfig(multiple=True)),
+            }
+        )
 
     return vol.Schema(schema_dict)
 
@@ -165,6 +209,7 @@ class WebhookConversationConfigFlow(ConfigFlow, domain=DOMAIN):
         return {
             "conversation": WebhookSubentryFlowHandler,
             "ai_task": WebhookSubentryFlowHandler,
+            "tts": WebhookSubentryFlowHandler,
         }
 
 
@@ -202,15 +247,17 @@ class WebhookSubentryFlowHandler(ConfigSubentryFlow):
             if self._is_new:
                 if self._subentry_type == "conversation":
                     options = RECOMMENDED_CONVERSATION_OPTIONS.copy()
-                else:
+                elif self._subentry_type == "ai_task":
                     options = RECOMMENDED_AI_TASK_OPTIONS.copy()
+                else:  # tts
+                    options = RECOMMENDED_TTS_OPTIONS.copy()
             else:
                 options = self._get_reconfigure_subentry().data.copy()
 
             return self.async_show_form(
                 step_id="set_options",
                 data_schema=_get_subentry_schema(
-                    self._subentry_type, options, self._is_new
+                    self._subentry_type, options, self._is_new, self.hass
                 ),
             )
 
@@ -227,11 +274,26 @@ class WebhookSubentryFlowHandler(ConfigSubentryFlow):
             _LOGGER.error("Invalid webhook URL: %s", webhook_url)
             errors["base"] = "invalid_webhook_url"
 
+        if self._subentry_type == "tts":
+            if not (supported_languages := user_input.get(CONF_SUPPORTED_LANGUAGES)):
+                errors[CONF_SUPPORTED_LANGUAGES] = "no_languages_specified"
+
+            for language_code in cast(list[str], supported_languages):
+                if not (language_code := language_code.strip()):
+                    errors[CONF_SUPPORTED_LANGUAGES] = "invalid_language_code"
+                    break
+
+                try:
+                    language_util.Dialect.parse(language_code)
+                except (ValueError, AttributeError):
+                    errors[CONF_SUPPORTED_LANGUAGES] = "invalid_language_code"
+                    break
+
         if errors:
             return self.async_show_form(
                 step_id="set_options",
                 data_schema=_get_subentry_schema(
-                    self._subentry_type, user_input, self._is_new
+                    self._subentry_type, user_input, self._is_new, self.hass
                 ),
                 errors=errors,
             )

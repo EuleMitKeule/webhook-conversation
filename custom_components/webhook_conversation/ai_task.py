@@ -14,7 +14,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import llm
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .entity import WebhookConversationBaseEntity
+from .entity import WebhookConversationLLMBaseEntity
 from .models import WebhookConversationBinaryObject
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ async def async_setup_entry(
         )
 
 
-class WebhookAITaskEntity(WebhookConversationBaseEntity, ai_task.AITaskEntity):
+class WebhookAITaskEntity(WebhookConversationLLMBaseEntity, ai_task.AITaskEntity):
     """Webhook AI Task entity."""
 
     _attr_supported_features = (

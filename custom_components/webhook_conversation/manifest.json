@@ -5,6 +5,7 @@
         "@EuleMitKeule"
     ],
     "config_flow": true,
+    "dependencies": ["conversation"],
     "documentation": "https://github.com/eulemitkeule/webhook-conversation",
     "integration_type": "service",
     "iot_class": "cloud_polling",

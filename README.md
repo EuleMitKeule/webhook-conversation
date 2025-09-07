@@ -16,7 +16,8 @@ _Integration to connect Home Assistant conversation agents and AI features to ex
 
 - 🤖 Use n8n workflows as conversation agents in Home Assistant
 - 🧩 AI Tasks via a dedicated webhook, supporting text or structured outputs
-- 📎 Support for file attachments in AI Tasks (images, documents, etc.)
+- � Text-to-Speech (TTS) support with custom webhook-based voice synthesis
+- �📎 Support for file attachments in AI Tasks (images, documents, etc.)
 - 📡 Send conversation context and exposed entities to webhooks
 - 🏠 Seamless integration with Home Assistant's voice assistant system
 - 🔧 Configurable webhook URLs and output fields
@@ -77,8 +78,15 @@ After the integration is added, you'll see the "Webhook Conversation" integratio
    - **Enable Response Streaming**: Enable real-time streaming of responses as they are generated (default: disabled)
    - **System Prompt**: A custom system prompt to provide additional context or instructions to your AI model
 
+3. **Add TTS (Text-to-Speech)**: Click the **"Add Entry"** button on the integration page and select **"TTS"** to create a webhook-based text-to-speech service. Configure it with:
+   - **Webhook URL**: The URL of your webhook endpoint that will handle TTS requests
+   - **Timeout**: The timeout in seconds for waiting for audio response (default: 30 seconds, range: 1-300 seconds)
+   - **Supported Languages**: List of supported language codes (e.g., "en-US", "de-DE", "fr-FR")
+   - **Voices**: Optional list of available voice names for speech synthesis
+   - **Authentication**: Optional HTTP basic authentication for securing your webhook endpoint
+
 > [!NOTE]
-> You can add multiple conversation agents and AI task handlers by repeating step 2. Each can be configured with different webhook URLs and settings to support various use cases.
+> You can add multiple conversation agents, AI task handlers, and TTS services by repeating step 2. Each can be configured with different webhook URLs and settings to support various use cases.
 
 ### n8n Workflow Setup
 
@@ -179,10 +187,22 @@ This example workflow includes:
 }
 ```
 
+##### For **TTS (Text-to-Speech)**
+
+```json
+{
+  "text": "Hello, this is the text to be synthesized",
+  "language": "en-US",
+  "voice": "optional_voice_name"
+}
+```
+
 > [!NOTE]
 > For **conversations**: The `device_id` and `device_info` fields are only set when the conversation was initiated via a voice satellite. The `language` field contains the language code (e.g., "de-DE") configured for the conversation. The `agent_id` field contains the entity ID of the conversation agent.
 >
 > For **AI tasks**: The `binary_objects` field is only included when attachments are present in the AI task. The `structure` field is only included when a JSON schema is provided by the action call. The `task_name` field is only included for AI tasks when provided by the action call. Each attachment is converted to base64 format and includes metadata such as filename, file path, and MIME type.
+>
+> For **TTS**: The `voice` field is only included when a specific voice is requested and the TTS service has been configured with available voices. The webhook should return audio data with an appropriate Content-Type header (e.g., "audio/wav" or "audio/mp3").
 
 ## Authentication
 
@@ -294,6 +314,65 @@ In your n8n workflow, you can process attachments by:
 
 > [!TIP]
 > Attachment support is only available for AI Tasks, not regular conversation messages. Make sure your n8n workflow can handle payloads both with and without the `binary_objects` field.
+
+## Text-to-Speech (TTS) Support
+
+The webhook conversation integration includes support for custom Text-to-Speech services through webhooks, allowing you to use external TTS engines like OpenAI's TTS API, ElevenLabs, or custom voice synthesis solutions.
+
+### How TTS Works
+
+When configured, the TTS webhook integration:
+
+1. **Receives TTS requests**: Home Assistant sends text that needs to be synthesized to speech
+2. **Processes via webhook**: Your webhook endpoint processes the text and generates audio
+3. **Returns audio data**: The webhook returns audio data in WAV or MP3 format
+4. **Plays in Home Assistant**: The audio is played through Home Assistant's audio system
+
+### TTS Configuration
+
+When adding a TTS subentry, you can configure:
+
+- **Webhook URL**: The endpoint that will handle TTS synthesis requests
+- **Supported Languages**: List of language codes your TTS service supports (e.g., "en-US", "de-DE", "fr-FR")
+- **Voices**: Optional list of available voice names for different speaking styles
+- **Timeout**: How long to wait for audio generation (default: 30 seconds)
+- **Authentication**: HTTP basic authentication for securing your webhook
+
+### TTS Request Format
+
+Your webhook will receive POST requests with this JSON payload:
+
+```json
+{
+  "text": "Hello, this is the text to be synthesized",
+  "language": "en-US",
+  "voice": "optional_voice_name"
+}
+```
+
+### TTS Response Format
+
+Your webhook should return audio data with the appropriate Content-Type header:
+
+- **Content-Type**: Must be `audio/wav` or `audio/mp3`
+- **Body**: Raw audio data in the specified format
+
+### Usage in Voice Assistants
+
+Once configured, your TTS webhook service will appear in Home Assistant's TTS service list and can be used:
+
+1. **Voice Assistant Pipelines**: Select your webhook TTS service in voice assistant pipeline configuration
+2. **TTS Service Calls**: Use the `tts.speak` service with your webhook TTS entity
+3. **Media Players**: The generated audio can be played on any media player device
+
+### Supported Audio Formats
+
+The TTS webhook integration supports:
+- **WAV**: Uncompressed audio format (`audio/wav`)
+- **MP3**: Compressed audio format (`audio/mp3`)
+
+> [!TIP]
+> For best performance, consider using MP3 format to reduce bandwidth usage, especially for longer text synthesis. Make sure your webhook endpoint sets the correct Content-Type header to match the audio format being returned.
 
 ## Contributing
 

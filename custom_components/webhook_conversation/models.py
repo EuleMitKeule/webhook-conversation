@@ -46,3 +46,11 @@ class WebhookConversationPayload(TypedDict):
     binary_objects: NotRequired[list[WebhookConversationBinaryObject]]
     structure: NotRequired[dict[str, Any] | None]
     task_name: NotRequired[str | None]
+
+
+class WebhookTTSRequestPayload(TypedDict):
+    """TTS request payload."""
+
+    text: str
+    language: str
+    voice: NotRequired[str]

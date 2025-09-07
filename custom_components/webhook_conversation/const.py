@@ -14,6 +14,7 @@ DEFAULT_TITLE = "Webhook Conversation"
 # Subentry names
 DEFAULT_CONVERSATION_NAME = "Webhook Conversation"
 DEFAULT_AI_TASK_NAME = "Webhook AI Task"
+DEFAULT_TTS_NAME = "Webhook TTS"
 
 # Subentry configuration constants
 CONF_WEBHOOK_URL = "webhook_url"
@@ -24,12 +25,15 @@ CONF_PROMPT = "prompt"
 CONF_AUTH_TYPE = "auth_type"
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
+CONF_SUPPORTED_LANGUAGES = "supported_languages"
+CONF_VOICES = "voices"
 
 # Defaults for subentries
 DEFAULT_OUTPUT_FIELD = "output"
 DEFAULT_TIMEOUT = 30
 DEFAULT_ENABLE_STREAMING = True
 DEFAULT_PROMPT = llm.DEFAULT_INSTRUCTIONS_PROMPT
+DEFAULT_SUPPORTED_LANGUAGES = ["en-US"]
 
 
 class AuthType(StrEnum):
@@ -56,6 +60,12 @@ RECOMMENDED_AI_TASK_OPTIONS = {
     CONF_TIMEOUT: DEFAULT_TIMEOUT,
     CONF_ENABLE_STREAMING: DEFAULT_ENABLE_STREAMING,
     CONF_AUTH_TYPE: DEFAULT_AUTH_TYPE,
+}
+
+RECOMMENDED_TTS_OPTIONS = {
+    CONF_TIMEOUT: DEFAULT_TIMEOUT,
+    CONF_AUTH_TYPE: DEFAULT_AUTH_TYPE,
+    CONF_SUPPORTED_LANGUAGES: DEFAULT_SUPPORTED_LANGUAGES,
 }
 
 # Legacy constants for backward compatibility

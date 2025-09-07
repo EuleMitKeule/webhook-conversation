@@ -40,20 +40,16 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class WebhookConversationBaseEntity(Entity):
-    """Base mixin for webhook conversation entities providing shared helpers."""
+    """Base entity for webhook conversation integration providing shared basics."""
 
     _attr_has_entity_name = True
     _attr_name = None
 
     def __init__(self, config_entry: ConfigEntry, subentry: ConfigSubentry) -> None:
-        """Initialize base properties shared by webhook conversation entities."""
+        """Initialize base properties shared by all webhook conversation entities."""
         self._config_entry = config_entry
         self._subentry = subentry
         self._webhook_url = subentry.data[CONF_WEBHOOK_URL]
-        self._system_prompt = subentry.data[CONF_PROMPT]
-        self._streaming_enabled: bool = subentry.data.get(
-            CONF_ENABLE_STREAMING, DEFAULT_ENABLE_STREAMING
-        )
         self._auth_type = subentry.data.get(CONF_AUTH_TYPE, DEFAULT_AUTH_TYPE)
         self._attr_unique_id = subentry.subentry_id
         self._attr_device_info = dr.DeviceInfo(
@@ -82,6 +78,18 @@ class WebhookConversationBaseEntity(Entity):
                 )
 
         return headers
+
+
+class WebhookConversationLLMBaseEntity(WebhookConversationBaseEntity):
+    """Base entity for LLM-based webhook conversation entities (conversation and AI task)."""
+
+    def __init__(self, config_entry: ConfigEntry, subentry: ConfigSubentry) -> None:
+        """Initialize LLM-specific properties."""
+        super().__init__(config_entry, subentry)
+        self._system_prompt = subentry.data[CONF_PROMPT]
+        self._streaming_enabled: bool = subentry.data.get(
+            CONF_ENABLE_STREAMING, DEFAULT_ENABLE_STREAMING
+        )
 
     async def _send_payload(self, payload: WebhookConversationPayload) -> Any:
         """Send the payload to the webhook."""

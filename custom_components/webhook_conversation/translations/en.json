@@ -71,6 +71,46 @@
         "entry_not_loaded": "Cannot add things while the configuration is disabled.",
         "reconfigure_successful": "Reconfiguration successful"
       }
+    },
+    "tts": {
+      "initiate_flow": {
+        "user": "Add text-to-speech",
+        "reconfigure": "Reconfigure text-to-speech"
+      },
+      "entry_type": "Text-to-speech",
+      "step": {
+        "set_options": {
+          "data": {
+            "webhook_url": "Webhook URL",
+            "timeout": "Request timeout (seconds)",
+            "auth_type": "Authentication type",
+            "supported_languages": "Supported languages",
+            "voices": "Voices"
+          },
+          "data_description": {
+            "supported_languages": "Enter language codes (e.g., en-US, de-DE, fr-FR).",
+            "voices": "Enter voice names."
+          }
+        },
+        "auth": {
+          "title": "Authentication Configuration",
+          "description": "Configure authentication for webhook requests",
+          "data": {
+            "username": "Username",
+            "password": "Password"
+          }
+        }
+      },
+      "error": {
+        "invalid_webhook_url": "Invalid webhook URL",
+        "invalid_auth": "Invalid authentication credentials",
+        "invalid_language_code": "One or more language codes are invalid. Please use valid language codes like en-US, de-DE, fr-FR.",
+        "unknown": "Unexpected error occurred"
+      },
+      "abort": {
+        "entry_not_loaded": "Cannot add things while the configuration is disabled.",
+        "reconfigure_successful": "Reconfiguration successful"
+      }
     }
   },
   "selector": {

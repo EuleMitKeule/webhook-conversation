@@ -19,7 +19,7 @@ from homeassistant.helpers import (
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import DOMAIN
-from .entity import WebhookConversationBaseEntity
+from .entity import WebhookConversationLLMBaseEntity
 from .models import WebhookConversationPayload
 
 _LOGGER = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ async def async_setup_entry(
 class WebhookConversationEntity(
     conversation.ConversationEntity,
     conversation.models.AbstractConversationAgent,
-    WebhookConversationBaseEntity,
+    WebhookConversationLLMBaseEntity,
 ):
     """Webhook conversation agent."""
 
