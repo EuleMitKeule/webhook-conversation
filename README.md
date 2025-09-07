@@ -17,6 +17,7 @@ _Integration to connect Home Assistant conversation agents and AI features to ex
 - 🤖 Use n8n workflows as conversation agents in Home Assistant
 - 🧩 AI Tasks via a dedicated webhook, supporting text or structured outputs
 - 💬 Text-to-Speech (TTS) support with custom webhook-based voice synthesis
+- 🎤 Speech-to-Text (STT) support with custom webhook-based voice recognition
 - 📎 Support for file attachments in AI Tasks (images, documents, etc.)
 - 📡 Send conversation context and exposed entities to webhooks
 - 🏠 Seamless integration with Home Assistant's voice assistant system
@@ -85,8 +86,15 @@ After the integration is added, you'll see the "Webhook Conversation" integratio
    - **Voices**: Optional list of available voice names for speech synthesis
    - **Authentication**: Optional HTTP basic authentication for securing your webhook endpoint
 
+4. **Add STT (Speech-to-Text)**: Click the **"Add Entry"** button on the integration page and select **"STT"** to create a webhook-based speech-to-text service. Configure it with:
+   - **Webhook URL**: The URL of your webhook endpoint that will handle STT requests
+   - **Timeout**: The timeout in seconds for waiting for transcription response (default: 30 seconds, range: 1-300 seconds)
+   - **Supported Languages**: List of supported language codes (e.g., "en-US", "de-DE", "fr-FR")
+   - **Output Field**: The field name in the webhook response containing the transcribed text (default: "output")
+   - **Authentication**: Optional HTTP basic authentication for securing your webhook endpoint
+
 > [!NOTE]
-> You can add multiple conversation agents, AI task handlers, and TTS services by repeating step 2. Each can be configured with different webhook URLs and settings to support various use cases.
+> You can add multiple conversation agents, AI task handlers, TTS services, and STT services by repeating steps 2-4. Each can be configured with different webhook URLs and settings to support various use cases.
 
 ### n8n Workflow Setup
 
@@ -187,13 +195,17 @@ This example workflow includes:
 }
 ```
 
-##### For **TTS (Text-to-Speech)**
+##### For **STT (Speech-to-Text)**
 
 ```json
 {
-  "text": "Hello, this is the text to be synthesized",
-  "language": "en-US",
-  "voice": "optional_voice_name"
+  "audio": {
+    "name": "audio.wav",
+    "path": "/path/to/audio.wav",
+    "mime_type": "audio/wav",
+    "data": "base64_encoded_audio_content"
+  },
+  "language": "en-US"
 }
 ```
 
@@ -203,6 +215,8 @@ This example workflow includes:
 > For **AI tasks**: The `binary_objects` field is only included when attachments are present in the AI task. The `structure` field is only included when a JSON schema is provided by the action call. The `task_name` field is only included for AI tasks when provided by the action call. Each attachment is converted to base64 format and includes metadata such as filename, file path, and MIME type.
 >
 > For **TTS**: The `voice` field is only included when a specific voice is requested and the TTS service has been configured with available voices. The webhook should return audio data with an appropriate Content-Type header (e.g., "audio/wav" or "audio/mp3").
+>
+> For **STT**: The audio data is automatically converted to the appropriate format and encoded as base64. The webhook should return a JSON response with the transcribed text in the configured output field (default: "output").
 
 ## Authentication
 
@@ -245,9 +259,9 @@ To use the n8n conversation agent with voice assistants, you need to create a vo
 3. Configure your pipeline:
    - **Name**: Give your pipeline a descriptive name (e.g., "Webhook Assistant")
    - **Language**: Select your preferred language
-   - **Speech-to-text**: Choose your preferred STT engine (e.g., Whisper, Google Cloud)
+   - **Speech-to-text**: Choose your preferred STT engine (e.g., Whisper, Google Cloud, or your webhook STT service)
    - **Conversation agent**: Select your webhook conversation agent from the dropdown
-   - **Text-to-speech**: Choose your preferred TTS engine (e.g., Google Translate, Piper)
+   - **Text-to-speech**: Choose your preferred TTS engine (e.g., Google Translate, Piper, or your webhook TTS service)
    - **Wake word**: Optionally configure a wake word engine
 4. Click **Create** to save your pipeline
 5. Set this pipeline as the default for voice assistants or assign it to specific devices
@@ -314,6 +328,66 @@ In your n8n workflow, you can process attachments by:
 
 > [!TIP]
 > Attachment support is only available for AI Tasks, not regular conversation messages. Make sure your n8n workflow can handle payloads both with and without the `binary_objects` field.
+
+## Speech-to-Text (STT) Support
+
+The webhook conversation integration includes support for custom Speech-to-Text services through webhooks, allowing you to use external STT engines like OpenAI's Whisper API, Google Cloud Speech-to-Text, or custom speech recognition solutions.
+
+### How STT Works
+
+When configured, the STT webhook integration:
+
+1. **Receives audio data**: Home Assistant captures voice input from microphones or voice satellites
+2. **Processes via webhook**: Your webhook endpoint receives the audio data and converts it to text
+3. **Returns transcribed text**: The webhook returns the transcribed text in JSON format
+4. **Integrates with conversation**: The transcribed text is passed to your conversation agent for processing
+
+### STT Configuration
+
+When adding an STT subentry, you can configure:
+
+- **Webhook URL**: The endpoint that will handle speech-to-text transcription requests
+- **Supported Languages**: List of language codes your STT service supports (e.g., "en-US", "de-DE", "fr-FR")
+- **Output Field**: The field name in the webhook response containing the transcribed text (default: "output")
+- **Timeout**: How long to wait for transcription (default: 30 seconds)
+- **Authentication**: HTTP basic authentication for securing your webhook
+
+### STT Request Format
+
+Your webhook will receive POST requests with this JSON payload:
+
+```json
+{
+  "audio": {
+    "name": "audio.wav",
+    "path": "/path/to/audio.wav",
+    "mime_type": "audio/wav",
+    "data": "base64_encoded_audio_content"
+  },
+  "language": "en-US"
+}
+```
+
+### STT Response Format
+
+Your webhook should return a JSON response with the transcribed text:
+
+```json
+{
+  "output": "Hello, this is the transcribed text from the audio"
+}
+```
+
+### Usage in Voice Assistants
+
+Once configured, your STT webhook service will appear in Home Assistant's STT service list and can be used:
+
+1. **Voice Assistant Pipelines**: Select your webhook STT service in voice assistant pipeline configuration
+2. **Voice Satellites**: Use with Wyoming satellite devices or other voice input devices
+3. **Mobile Apps**: Compatible with Home Assistant mobile app voice input
+
+> [!TIP]
+> The integration automatically converts raw audio streams to properly formatted WAV files with headers before encoding to base64. This ensures compatibility with most external STT services that expect standard audio file formats.
 
 ## Text-to-Speech (TTS) Support
 

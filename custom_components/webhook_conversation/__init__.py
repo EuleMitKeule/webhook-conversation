@@ -28,7 +28,7 @@ from .const import (
     DOMAIN,
 )
 
-PLATFORMS = [Platform.AI_TASK, Platform.CONVERSATION, Platform.TTS]
+PLATFORMS = [Platform.AI_TASK, Platform.CONVERSATION, Platform.STT, Platform.TTS]
 _LOGGER = logging.getLogger(__name__)
 
 

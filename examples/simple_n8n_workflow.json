@@ -155,6 +155,97 @@
         -96
       ],
       "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "binaryPropertyName": "audio",
+        "options": {
+          "language": "={{ $json.body.language }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        288,
+        -448
+      ],
+      "id": "e44f61fc-3454-4236-82c4-a16f804d1934",
+      "name": "STT",
+      "credentials": {
+        "openAiApi": {
+          "id": "wPtEzytsyQHnTsV2",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        544,
+        -448
+      ],
+      "id": "004e2ed1-7e40-4c33-8676-865b0150773e",
+      "name": "STT Response"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "stt",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        -448
+      ],
+      "id": "992a0376-59f9-459f-b6d5-c9d6964d09d1",
+      "name": "Webhook STT",
+      "webhookId": "cebf2e3f-6b65-4f94-beaa-0f749996e337"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "09bd748c-5334-46ed-a9ed-a4f51c6d340a",
+              "name": "output",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        -448
+      ],
+      "id": "ce888b04-8c32-45b7-8ef3-15da9c71ff41",
+      "name": "Extract Output"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// n8n Code node — Extract WebhookSTTRequestPayload.audio into binary\n\nconst audio = $json.body.audio;\n\nfunction stripDataUrlPrefix(value) {\n  return String(value ?? '').replace(/^data:.*?;base64,/, '');\n}\n\nlet binary = {};\n\nif (audio && audio.data) {\n  binary['audio'] = {\n    data: stripDataUrlPrefix(audio.data), // base64 only\n    fileName: audio.name || 'audio',\n    mimeType: audio.mime_type || 'application/octet-stream',\n  };\n}\n\nreturn {\n  $json,\n  binary,\n};\n"
+      },
+      "id": "56bae826-a297-4d86-9190-bfefdd7a3e2d",
+      "name": "Extract Audio",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        160,
+        -448
+      ],
+      "typeVersion": 1
     }
   ],
   "connections": {
@@ -239,6 +330,55 @@
           }
         ]
       ]
+    },
+    "STT": {
+      "main": [
+        [
+          {
+            "node": "Extract Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "STT Response": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook STT": {
+      "main": [
+        [
+          {
+            "node": "Extract Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Output": {
+      "main": [
+        [
+          {
+            "node": "STT Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Audio": {
+      "main": [
+        [
+          {
+            "node": "STT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "pinData": {
@@ -248,6 +388,13 @@
           "text": "This is a test!",
           "language": "en-US",
           "voice": "Onyx"
+        }
+      }
+    ],
+    "Webhook STT": [
+      {
+        "body": {
+          "language": "en-US"
         }
       }
     ]

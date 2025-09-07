@@ -54,3 +54,10 @@ class WebhookTTSRequestPayload(TypedDict):
     text: str
     language: str
     voice: NotRequired[str]
+
+
+class WebhookSTTRequestPayload(TypedDict):
+    """STT request payload."""
+
+    audio: WebhookConversationBinaryObject
+    language: str
