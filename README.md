@@ -16,8 +16,8 @@ _Integration to connect Home Assistant conversation agents and AI features to ex
 
 - 🤖 Use n8n workflows as conversation agents in Home Assistant
 - 🧩 AI Tasks via a dedicated webhook, supporting text or structured outputs
-- � Text-to-Speech (TTS) support with custom webhook-based voice synthesis
-- �📎 Support for file attachments in AI Tasks (images, documents, etc.)
+- 💬 Text-to-Speech (TTS) support with custom webhook-based voice synthesis
+- 📎 Support for file attachments in AI Tasks (images, documents, etc.)
 - 📡 Send conversation context and exposed entities to webhooks
 - 🏠 Seamless integration with Home Assistant's voice assistant system
 - 🔧 Configurable webhook URLs and output fields
