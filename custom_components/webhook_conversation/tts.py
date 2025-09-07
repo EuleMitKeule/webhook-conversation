@@ -50,14 +50,19 @@ class WebhookConversationTextToSpeechEntity(
     """Webhook TTS entity."""
 
     _attr_has_entity_name = False
+    _attr_name: str
     _voices: list[Voice] | None = None
 
     def __init__(self, config_entry: ConfigEntry, subentry: ConfigSubentry) -> None:
         """Initialize TTS entity."""
         super().__init__(config_entry, subentry)
-        self._attr_name = self.device_info.get("name", subentry.title)
+        self._attr_name: str = (
+            (self.device_info.get("name") or subentry.title)
+            if self.device_info
+            else subentry.title
+        )
 
-        supported_languages = subentry.data.get(CONF_SUPPORTED_LANGUAGES)
+        supported_languages: list[str] = subentry.data[CONF_SUPPORTED_LANGUAGES]
         self._attr_supported_languages = supported_languages
         self._attr_default_language = supported_languages[0]
 
@@ -71,8 +76,10 @@ class WebhookConversationTextToSpeechEntity(
         return self._voices
 
     @cached_property
-    def default_options(self) -> Mapping[str, Any]:
+    def default_options(self) -> Mapping[str, Any] | None:
         """Return a mapping with the default options."""
+        if not self._voices:
+            return None
         return {
             ATTR_VOICE: self._voices[0],
         }
