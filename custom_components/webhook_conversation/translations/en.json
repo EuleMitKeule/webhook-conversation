@@ -1,35 +1,84 @@
 {
-    "config": {
-        "step": {
-            "user": {
-                "data": {
-                    "name": "Name",
-                    "webhook_url": "Webhook URL",
-                    "ai_task_webhook_url": "AI task webhook URL",
-                    "output_field": "Output Field",
-                    "prompt": "System Prompt",
-                    "timeout": "Timeout (seconds)",
-                    "enable_streaming": "Enable response streaming"
-                }
-            }
+  "config_subentries": {
+    "conversation": {
+      "initiate_flow": {
+        "user": "Add conversation agent",
+        "reconfigure": "Reconfigure conversation agent"
+      },
+      "entry_type": "Conversation agent",
+      "step": {
+        "set_options": {
+          "data": {
+            "webhook_url": "Webhook URL",
+            "output_field": "Output field name",
+            "prompt": "System Prompt",
+            "timeout": "Request timeout (seconds)",
+            "enable_streaming": "Enable response streaming",
+            "auth_type": "Authentication type"
+          }
         },
-        "error": {
-            "invalid_webhook_url": "Invalid Webhook URL (must start with 'http://' or 'https://')"
+        "auth": {
+          "title": "Authentication Configuration",
+          "description": "Configure authentication for webhook requests",
+          "data": {
+            "username": "Username",
+            "password": "Password"
+          }
         }
+      },
+      "error": {
+        "invalid_webhook_url": "Invalid webhook URL",
+        "invalid_auth": "Invalid authentication credentials",
+        "unknown": "Unexpected error occurred"
+      },
+      "abort": {
+        "entry_not_loaded": "Cannot add things while the configuration is disabled.",
+        "reconfigure_successful": "Reconfiguration successful"
+      }
     },
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "name": "Name",
-                    "webhook_url": "Webhook URL",
-                    "ai_task_webhook_url": "AI task webhook URL",
-                    "output_field": "Output Field",
-                    "prompt": "System Prompt",
-                    "timeout": "Timeout (seconds)",
-                    "enable_streaming": "Enable response streaming"
-                }
-            }
+    "ai_task": {
+      "initiate_flow": {
+        "user": "Add AI task",
+        "reconfigure": "Reconfigure AI task"
+      },
+      "entry_type": "AI task",
+      "step": {
+        "set_options": {
+          "data": {
+            "webhook_url": "Webhook URL",
+            "output_field": "Output field name",
+            "prompt": "System Prompt",
+            "timeout": "Request timeout (seconds)",
+            "enable_streaming": "Enable response streaming",
+            "auth_type": "Authentication type"
+          }
+        },
+        "auth": {
+          "title": "Authentication Configuration",
+          "description": "Configure authentication for webhook requests",
+          "data": {
+            "username": "Username",
+            "password": "Password"
+          }
         }
+      },
+      "error": {
+        "invalid_webhook_url": "Invalid webhook URL",
+        "invalid_auth": "Invalid authentication credentials",
+        "unknown": "Unexpected error occurred"
+      },
+      "abort": {
+        "entry_not_loaded": "Cannot add things while the configuration is disabled.",
+        "reconfigure_successful": "Reconfiguration successful"
+      }
     }
+  },
+  "selector": {
+    "auth_type": {
+      "options": {
+        "none": "No authentication",
+        "basic_auth": "Basic HTTP authentication"
+      }
+    }
+  }
 }

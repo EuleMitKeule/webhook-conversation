@@ -51,16 +51,34 @@ _Integration to connect Home Assistant conversation agents and AI features to ex
 
 ### Home Assistant Setup
 
+The setup process consists of two steps:
+
+#### Step 1: Create the Integration Entry
+
 1. Go to **Settings** → **Devices & Services**
 2. Click **Add Integration** and search for "Webhook Conversation"
-3. Configure the integration with:
-   - **Name**: A friendly name for your webhook agent
+3. Add the integration (no configuration options are required at this stage)
+
+#### Step 2: Add Conversation Agents and AI Tasks
+
+After the integration is added, you'll see the "Webhook Conversation" integration on your integrations page. From there:
+
+1. **Add Conversation Agent**: Click the **"Add Entry"** button on the integration page and select **"Conversation Agent"** to create a new webhook-based conversation agent. Configure it with:
    - **Webhook URL**: The URL of your webhook endpoint (remember to activate the workflow in n8n and to use the production webhook URL)
-   - **AI Task Webhook URL**: A separate webhook endpoint for AI Tasks
    - **Output Field**: The field name in the webhook response containing the reply (default: "output")
    - **Timeout**: The timeout in seconds for waiting for a response (default: 30 seconds, range: 1-300 seconds)
    - **Enable Response Streaming**: Enable real-time streaming of responses as they are generated (default: disabled)
    - **System Prompt**: A custom system prompt to provide additional context or instructions to your AI model
+
+2. **Add AI Task**: Click the **"Add Entry"** button on the integration page and select **"AI Task"** to create a webhook-based AI task handler. Configure it with:
+   - **Webhook URL**: The URL of your webhook endpoint (remember to activate the workflow in n8n and to use the production webhook URL)
+   - **Output Field**: The field name in the webhook response containing the reply (default: "output")
+   - **Timeout**: The timeout in seconds for waiting for a response (default: 30 seconds, range: 1-300 seconds)
+   - **Enable Response Streaming**: Enable real-time streaming of responses as they are generated (default: disabled)
+   - **System Prompt**: A custom system prompt to provide additional context or instructions to your AI model
+
+> [!NOTE]
+> You can add multiple conversation agents and AI task handlers by repeating step 2. Each can be configured with different webhook URLs and settings to support various use cases.
 
 ### n8n Workflow Setup
 

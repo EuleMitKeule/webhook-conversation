@@ -11,7 +11,7 @@ from typing import Any
 import aiohttp
 
 from homeassistant.components import conversation
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigSubentry
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -25,11 +25,13 @@ from .const import (
     CONF_PROMPT,
     CONF_TIMEOUT,
     CONF_USERNAME,
+    CONF_WEBHOOK_URL,
     DEFAULT_AUTH_TYPE,
     DEFAULT_ENABLE_STREAMING,
     DEFAULT_OUTPUT_FIELD,
     DEFAULT_TIMEOUT,
     DOMAIN,
+    MANUFACTURER,
     AuthType,
 )
 from .models import WebhookConversationMessage, WebhookConversationPayload
@@ -42,20 +44,22 @@ class WebhookConversationBaseEntity(Entity):
 
     _attr_has_entity_name = True
     _attr_name = None
-    _webhook_url: str
 
-    def __init__(self, config_entry: ConfigEntry) -> None:
+    def __init__(self, config_entry: ConfigEntry, subentry: ConfigSubentry) -> None:
         """Initialize base properties shared by webhook conversation entities."""
         self._config_entry = config_entry
-        self._system_prompt = config_entry.options[CONF_PROMPT]
-        self._streaming_enabled: bool = config_entry.options.get(
+        self._subentry = subentry
+        self._webhook_url = subentry.data[CONF_WEBHOOK_URL]
+        self._system_prompt = subentry.data[CONF_PROMPT]
+        self._streaming_enabled: bool = subentry.data.get(
             CONF_ENABLE_STREAMING, DEFAULT_ENABLE_STREAMING
         )
-        self._auth_type = config_entry.options.get(CONF_AUTH_TYPE, DEFAULT_AUTH_TYPE)
+        self._auth_type = subentry.data.get(CONF_AUTH_TYPE, DEFAULT_AUTH_TYPE)
+        self._attr_unique_id = subentry.subentry_id
         self._attr_device_info = dr.DeviceInfo(
-            identifiers={(DOMAIN, config_entry.entry_id)},
-            name=config_entry.title,
-            manufacturer="webhook-conversation",
+            identifiers={(DOMAIN, subentry.subentry_id)},
+            name=subentry.title,
+            manufacturer=MANUFACTURER,
             entry_type=dr.DeviceEntryType.SERVICE,
         )
 
@@ -64,8 +68,8 @@ class WebhookConversationBaseEntity(Entity):
         headers = {"Content-Type": "application/json"}
 
         if self._auth_type == AuthType.BASIC:
-            username = self._config_entry.options.get(CONF_USERNAME, "")
-            password = self._config_entry.options.get(CONF_PASSWORD, "")
+            username = self._subentry.data.get(CONF_USERNAME, "")
+            password = self._subentry.data.get(CONF_PASSWORD, "")
 
             if username and password:
                 credentials = base64.b64encode(
@@ -86,7 +90,7 @@ class WebhookConversationBaseEntity(Entity):
             payload,
         )
 
-        timeout = self._config_entry.options.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
+        timeout = self._subentry.data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
         session = async_get_clientsession(self.hass)
         client_timeout = aiohttp.ClientTimeout(total=timeout)
         headers = self._get_auth_headers()
@@ -103,7 +107,7 @@ class WebhookConversationBaseEntity(Entity):
                 )
             result = await response.json()
 
-        output_field: str = self._config_entry.options.get(
+        output_field: str = self._subentry.data.get(
             CONF_OUTPUT_FIELD, DEFAULT_OUTPUT_FIELD
         )
         if not isinstance(result, dict) or output_field not in result:
@@ -118,7 +122,7 @@ class WebhookConversationBaseEntity(Entity):
         """Send the payload to the webhook and stream the response."""
         _LOGGER.debug("Webhook streaming request: %s", payload)
 
-        timeout = self._config_entry.options.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
+        timeout = self._subentry.data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
         session = async_get_clientsession(self.hass)
         client_timeout = aiohttp.ClientTimeout(total=timeout)
         headers = self._get_auth_headers()

@@ -14,7 +14,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import llm
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import CONF_AI_TASK_WEBHOOK_URL
 from .entity import WebhookConversationBaseEntity
 from .models import WebhookConversationBinaryObject
 
@@ -27,27 +26,23 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up AI Task entity for webhook conversation."""
-    if not config_entry.options.get(CONF_AI_TASK_WEBHOOK_URL):
-        return
+    for subentry in config_entry.subentries.values():
+        if subentry.subentry_type != "ai_task":
+            continue
 
-    async_add_entities([WebhookAITaskEntity(config_entry)])
+        async_add_entities(
+            [WebhookAITaskEntity(config_entry, subentry)],
+            config_subentry_id=subentry.subentry_id,
+        )
 
 
 class WebhookAITaskEntity(WebhookConversationBaseEntity, ai_task.AITaskEntity):
     """Webhook AI Task entity."""
 
-    _attr_has_entity_name = True
-    _attr_name = None
     _attr_supported_features = (
         ai_task.AITaskEntityFeature.GENERATE_DATA
         | ai_task.AITaskEntityFeature.SUPPORT_ATTACHMENTS
     )
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize the entity."""
-        WebhookConversationBaseEntity.__init__(self, config_entry)
-        self._webhook_url = config_entry.options[CONF_AI_TASK_WEBHOOK_URL]
-        self._attr_unique_id = f"{config_entry.entry_id}-ai_task"
 
     async def _async_generate_data(
         self,

@@ -7,7 +7,7 @@ from typing import Any, Literal
 
 from homeassistant.components import conversation
 from homeassistant.components.homeassistant.exposed_entities import async_should_expose
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigSubentry
 from homeassistant.const import MATCH_ALL
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
@@ -18,7 +18,7 @@ from homeassistant.helpers import (
 )
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import CONF_WEBHOOK_URL, DOMAIN
+from .const import DOMAIN
 from .entity import WebhookConversationBaseEntity
 from .models import WebhookConversationPayload
 
@@ -31,9 +31,14 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up the integration from a config entry."""
-    async_add_entities(
-        [WebhookConversationEntity(config_entry)],
-    )
+    for subentry in config_entry.subentries.values():
+        if subentry.subentry_type != "conversation":
+            continue
+
+        async_add_entities(
+            [WebhookConversationEntity(config_entry, subentry)],
+            config_subentry_id=subentry.subentry_id,
+        )
 
 
 class WebhookConversationEntity(
@@ -43,15 +48,12 @@ class WebhookConversationEntity(
 ):
     """Webhook conversation agent."""
 
-    _attr_has_entity_name = True
-    _attr_name = None
     _attr_supported_features = conversation.ConversationEntityFeature.CONTROL
 
-    def __init__(self, config_entry: ConfigEntry) -> None:
+    def __init__(self, config_entry: ConfigEntry, subentry: ConfigSubentry) -> None:
         """Initialize the agent."""
-        WebhookConversationBaseEntity.__init__(self, config_entry)
-        self._webhook_url = config_entry.options[CONF_WEBHOOK_URL]
-        self._attr_unique_id = f"{config_entry.entry_id}-conversation"
+        super().__init__(config_entry, subentry)
+        self._attr_supports_streaming = self._streaming_enabled
 
     @property
     def supported_languages(self) -> list[str] | Literal["*"]:
