@@ -6,7 +6,7 @@
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/eulemitkeule?logo=GitHub-Sponsors)
 
 > [!NOTE]
-> This integration requires Home Assistant `>=2025.8`.
+> This integration requires Home Assistant `>=2026.4`.
 
 _Integration to connect Home Assistant conversation agents and AI features to external systems through webhooks._
 
@@ -138,6 +138,7 @@ This example workflow includes:
 {
   "conversation_id": "abc123",
   "user_id": "user id from ha",
+  "user_name": "John Doe",
   "language": "de-DE",
   "agent_id": "conversation.webhook_agent",
   "device_id": "satellite_device_id",
@@ -442,6 +443,7 @@ Once configured, your TTS webhook service will appear in Home Assistant's TTS se
 ### Supported Audio Formats
 
 The TTS webhook integration supports:
+
 - **WAV**: Uncompressed audio format (`audio/wav`)
 - **MP3**: Compressed audio format (`audio/mp3`)
 

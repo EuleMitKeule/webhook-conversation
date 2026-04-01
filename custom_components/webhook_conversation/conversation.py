@@ -129,7 +129,13 @@ class WebhookConversationEntity(
             self._get_exposed_entities(), default=set_default
         )
         payload["language"] = user_input.language
+        user = (
+            await self.hass.auth.async_get_user(user_input.context.user_id)
+            if user_input.context.user_id
+            else None
+        )
         payload["user_id"] = user_input.context.user_id
+        payload["user_name"] = user.name if user else None
 
         if self._streaming_enabled:
             async for _ in chat_log.async_add_delta_content_stream(
@@ -174,7 +180,10 @@ class WebhookConversationEntity(
 
             aliases: list[str] = []
             if entity and entity.aliases:
-                aliases = list(entity.aliases)
+                aliases = [
+                    state.name if isinstance(a, er.ComputedNameType) else a
+                    for a in entity.aliases
+                ]
 
             area_id = None
             area_name = None
