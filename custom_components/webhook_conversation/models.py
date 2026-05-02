@@ -33,6 +33,7 @@ class WebhookConversationSTTWebSocketMetadata(TypedDict):
     sample_rate: int
     bit_rate: int
     channels: int
+    conversation_id: NotRequired[str]
 
 
 class WebhookConversationPayload(TypedDict):

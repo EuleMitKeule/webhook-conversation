@@ -77,7 +77,7 @@ class WebhookConversationBaseEntity(Entity):
         headers = {"Content-Type": "application/json"}
 
         username, password = self._get_basic_auth()
-        if username and password is not None:
+        if username and password:
             credentials = base64.b64encode(f"{username}:{password}".encode()).decode()
             headers["Authorization"] = f"Basic {credentials}"
 

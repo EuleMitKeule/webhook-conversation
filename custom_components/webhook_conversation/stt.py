@@ -149,11 +149,6 @@ class WebhookConversationSTTEntity(
         self, metadata: stt.SpeechMetadata, stream: AsyncIterable[bytes]
     ) -> stt.SpeechResult:
         """Process an audio stream to STT service."""
-        audio_data = b""
-
-        if chat_session := current_session.get():
-            payload["conversation_id"] = chat_session.conversation_id
-
         timeout = self._subentry.data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
 
         if self._webhook_url.startswith("ws://") or self._webhook_url.startswith(
@@ -163,7 +158,7 @@ class WebhookConversationSTTEntity(
 
             try:
                 username, password = self._get_basic_auth()
-                if username and password is not None:
+                if username and password:
                     auth = aiohttp.BasicAuth(username, password)
                 else:
                     auth = None
@@ -171,14 +166,28 @@ class WebhookConversationSTTEntity(
                 async with session.ws_connect(
                     self._webhook_url, timeout=timeout, auth=auth
                 ) as ws:
+                    # For WAV format the audio bytes are raw PCM (no WAV container
+                    # headers), so advertise audio/pcm rather than audio/wav.
+                    if metadata.format == stt.AudioFormats.WAV:
+                        audio_name = "audio.pcm"
+                        audio_mime = "audio/pcm"
+                    else:
+                        audio_name = f"audio.{metadata.format.value}"
+                        audio_mime = f"audio/{metadata.format.value}"
+
                     metadata_stt_ws: WebhookConversationSTTWebSocketMetadata = {
-                        "name": f"audio.{metadata.format.value}",
-                        "mime_type": f"audio/{metadata.format.value}",
+                        "name": audio_name,
+                        "mime_type": audio_mime,
                         "language": metadata.language,
                         "sample_rate": metadata.sample_rate.value,
                         "bit_rate": metadata.bit_rate.value,
                         "channels": metadata.channel.value,
                     }
+
+                    if chat_session := current_session.get():
+                        metadata_stt_ws["conversation_id"] = (
+                            chat_session.conversation_id
+                        )
 
                     # First ws message contains metadata about the audio stream and settings
                     await ws.send_json(metadata_stt_ws)
@@ -197,6 +206,7 @@ class WebhookConversationSTTEntity(
                 _LOGGER.error("Error parsing STT websocket response: %s", err)
                 return stt.SpeechResult(None, stt.SpeechResultState.ERROR)
         else:
+            audio_data = b""
             async for chunk in stream:
                 audio_data += chunk
 
@@ -227,6 +237,9 @@ class WebhookConversationSTTEntity(
                 "audio": audio_object,
                 "language": metadata.language,
             }
+
+            if chat_session := current_session.get():
+                payload["conversation_id"] = chat_session.conversation_id
 
             session = async_get_clientsession(self.hass)
             client_timeout = aiohttp.ClientTimeout(total=timeout)

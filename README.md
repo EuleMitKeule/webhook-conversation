@@ -213,15 +213,16 @@ This example workflow includes:
 
 ##### For **STT (Speech-to-Text) via WebSocket**
 
-First text message in WebSocket:
+First text message in WebSocket (example for WAV/PCM input):
 ```json
 {
-  "name": "audio.wav",
-  "mime_type": "audio/wav",
+  "name": "audio.pcm",
+  "mime_type": "audio/pcm",
   "language": "en-US",
   "sample_rate": 16000,
   "bit_rate": 16,
-  "channels": 1
+  "channels": 1,
+  "conversation_id": "abc123"
 }
 ```
 

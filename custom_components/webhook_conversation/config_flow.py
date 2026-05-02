@@ -294,11 +294,12 @@ class WebhookSubentryFlowHandler(ConfigSubentryFlow):
         )
 
         webhook_url: str = user_input[CONF_WEBHOOK_URL]
-        if (
-            not webhook_url.startswith("http://")
-            and not webhook_url.startswith("https://")
-            and not webhook_url.startswith("ws://")
-            and not webhook_url.startswith("wss://")
+        valid_http = webhook_url.startswith("http://") or webhook_url.startswith(
+            "https://"
+        )
+        valid_ws = webhook_url.startswith("ws://") or webhook_url.startswith("wss://")
+        if not valid_http and not (
+            self._subentry_type == "stt" and valid_ws
         ):
             _LOGGER.error("Invalid webhook URL: %s", webhook_url)
             errors["base"] = "invalid_webhook_url"
