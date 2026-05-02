@@ -120,7 +120,9 @@ class WebhookConversationLLMBaseEntity(WebhookConversationBaseEntity):
         output_field: str = self._subentry.data.get(
             CONF_OUTPUT_FIELD, DEFAULT_OUTPUT_FIELD
         )
-        if not isinstance(result, dict) or output_field not in result:
+        if not isinstance(result, dict) or (
+            output_field not in result and "tool_calls" not in result
+        ):
             raise HomeAssistantError(f"Invalid webhook response: {result}")
 
         _LOGGER.debug("Webhook response: %s", result)
@@ -195,7 +197,7 @@ class WebhookConversationLLMBaseEntity(WebhookConversationBaseEntity):
                 {
                     "role": content.role,
                     "content": json.dumps(content.tool_result)
-                    if content.tool_result
+                    if content.tool_result is not None
                     else "",
                     "tool_call_id": content.tool_call_id,
                     "tool_name": content.tool_name,

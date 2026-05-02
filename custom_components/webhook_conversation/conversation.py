@@ -165,8 +165,24 @@ class WebhookConversationEntity(
             payload["query"] = user_messages[-1]["content"]
             payload["agent_id"] = user_input.agent_id
             payload["device_id"] = user_input.device_id
+            payload["device_info"] = (
+                (
+                    device.dict_repr
+                    if (device := device_registry.async_get(user_input.device_id))
+                    else None
+                )
+                if user_input.device_id
+                else None
+            )
+            payload["exposed_entities"] = json.dumps(
+                self._get_exposed_entities(), default=set_default
+            )
             payload["language"] = user_input.language
             payload["user_id"] = user_input.context.user_id
+        else:
+            raise HomeAssistantError(
+                f"Webhook tool call loop exceeded {MAX_TOOL_ITERATIONS} iterations"
+            )
 
     async def _transform_webhook_stream(
         self, payload: WebhookConversationPayload

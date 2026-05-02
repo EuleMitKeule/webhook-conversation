@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import logging
+from typing import Any
 
 import anyio
 from voluptuous_openapi import convert
@@ -87,7 +88,7 @@ class WebhookAITaskEntity(WebhookConversationLLMBaseEntity, ai_task.AITaskEntity
                 CONF_OUTPUT_FIELD, DEFAULT_OUTPUT_FIELD
             )
             result = await self._send_payload(payload)
-            reply = result.get(output_field)
+            reply: Any = result.get(output_field)
 
         if not task.structure:
             text = reply if isinstance(reply, str) else str(reply)
