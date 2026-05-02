@@ -77,6 +77,7 @@ class WebhookAITaskEntity(WebhookConversationLLMBaseEntity, ai_task.AITaskEntity
                 task.structure.schema, custom_serializer=llm.selector_serializer
             )
 
+        reply: Any
         if self._streaming_enabled:
             reply_parts = []
             async for chunk_data in self._send_payload_streaming(payload):
@@ -88,7 +89,7 @@ class WebhookAITaskEntity(WebhookConversationLLMBaseEntity, ai_task.AITaskEntity
                 CONF_OUTPUT_FIELD, DEFAULT_OUTPUT_FIELD
             )
             result = await self._send_payload(payload)
-            reply: Any = result.get(output_field)
+            reply = result.get(output_field)
 
         if not task.structure:
             text = reply if isinstance(reply, str) else str(reply)

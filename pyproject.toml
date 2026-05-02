@@ -21,13 +21,13 @@ classifiers = [
     "Intended Audience :: Users",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 description = "A custom component for Home Assistant to use webhooks for conversation and AI features."
 readme = "README.md"
-requires-python = ">=3.13.2"
-version = "0.0.0"
-dependencies = ["homeassistant>=2025.8.0"]
+requires-python = ">=3.14.2"
+version = "0.0.0-dev"
+dependencies = []
 
 [project.urls]
 Repository = "https://github.com/eulemitkeule/webhook-conversation"
@@ -36,7 +36,7 @@ Changelog = "https://github.com/EuleMitKeule/webhook-conversation/releases"
 Issues = "https://github.com/eulemitkeule/webhook-conversation/issues"
 
 [dependency-groups]
-dev = ["mypy>=1.17.1", "ruff>=0.12.9"]
+dev = ["mypy>=1.17.1", "ruff>=0.12.9", "homeassistant>=2026.4.0"]
 
 [[tool.mypy.overrides]]
 module = ["voluptuous_openapi.*"]

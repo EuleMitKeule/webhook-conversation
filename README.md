@@ -6,7 +6,7 @@
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/eulemitkeule?logo=GitHub-Sponsors)
 
 > [!NOTE]
-> This integration requires Home Assistant `>=2025.8`.
+> This integration requires Home Assistant `>=2026.4`.
 
 _Integration to connect Home Assistant conversation agents and AI features to external systems through webhooks._
 
@@ -138,6 +138,7 @@ This example workflow includes:
 {
   "conversation_id": "abc123",
   "user_id": "user id from ha",
+  "user_name": "John Doe",
   "language": "de-DE",
   "agent_id": "conversation.webhook_agent",
   "device_id": "satellite_device_id",
@@ -205,7 +206,8 @@ This example workflow includes:
     "mime_type": "audio/wav",
     "data": "base64_encoded_audio_content"
   },
-  "language": "en-US"
+  "language": "en-US",
+  "conversation_id": "abc123"
 }
 ```
 
@@ -216,7 +218,7 @@ This example workflow includes:
 >
 > For **TTS**: The `voice` field is only included when a specific voice is requested and the TTS service has been configured with available voices. The webhook should return audio data with an appropriate Content-Type header (e.g., "audio/wav" or "audio/mp3").
 >
-> For **STT**: The audio data is automatically converted to the appropriate format and encoded as base64. The webhook should return a JSON response with the transcribed text in the configured output field (default: "output").
+> For **STT**: The audio data is automatically converted to the appropriate format and encoded as base64. The `conversation_id` field is included when the STT request is part of a voice pipeline run, allowing you to correlate STT requests with their corresponding conversation webhook calls. The webhook should return a JSON response with the transcribed text in the configured output field (default: "output").
 
 ## Authentication
 
@@ -442,6 +444,7 @@ Once configured, your TTS webhook service will appear in Home Assistant's TTS se
 ### Supported Audio Formats
 
 The TTS webhook integration supports:
+
 - **WAV**: Uncompressed audio format (`audio/wav`)
 - **MP3**: Compressed audio format (`audio/mp3`)
 

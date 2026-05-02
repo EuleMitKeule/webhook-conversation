@@ -132,7 +132,13 @@ class WebhookConversationEntity(
             self._get_exposed_entities(), default=set_default
         )
         payload["language"] = user_input.language
+        user = (
+            await self.hass.auth.async_get_user(user_input.context.user_id)
+            if user_input.context.user_id
+            else None
+        )
         payload["user_id"] = user_input.context.user_id
+        payload["user_name"] = user.name if user else None
 
         output_field: str = self._subentry.data.get(
             CONF_OUTPUT_FIELD, DEFAULT_OUTPUT_FIELD
@@ -179,7 +185,7 @@ class WebhookConversationEntity(
             )
             payload["language"] = user_input.language
             payload["user_id"] = user_input.context.user_id
-        else:
+            payload["user_name"] = user.name if user else None
             raise HomeAssistantError(
                 f"Webhook tool call loop exceeded {MAX_TOOL_ITERATIONS} iterations"
             )
@@ -216,7 +222,10 @@ class WebhookConversationEntity(
 
             aliases: list[str] = []
             if entity and entity.aliases:
-                aliases = list(entity.aliases)
+                aliases = [
+                    state.name if isinstance(a, er.ComputedNameType) else a
+                    for a in entity.aliases
+                ]
 
             area_id = None
             area_name = None

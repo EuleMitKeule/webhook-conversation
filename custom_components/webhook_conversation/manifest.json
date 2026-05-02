@@ -5,7 +5,9 @@
         "@EuleMitKeule"
     ],
     "config_flow": true,
-    "dependencies": ["conversation"],
+    "dependencies": [
+        "conversation"
+    ],
     "documentation": "https://github.com/eulemitkeule/webhook-conversation",
     "integration_type": "service",
     "iot_class": "cloud_polling",
@@ -13,5 +15,5 @@
     "requirements": [
         "voluptuous-openapi"
     ],
-    "version": "0.0.0"
+    "version": "0.0.0-dev"
 }

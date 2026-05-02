@@ -21,9 +21,9 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
-          python-version: 3.13
+          python-version: 3.14
           enable-cache: true
-          cache-suffix: uv-${{ runner.os }}-3.13
+          cache-suffix: uv-${{ runner.os }}-3.14
 
       - name: Install dependecies
         run: uv sync --all-groups
@@ -38,9 +38,9 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
-          python-version: 3.13
+          python-version: 3.14
           enable-cache: true
-          cache-suffix: uv-${{ runner.os }}-3.13
+          cache-suffix: uv-${{ runner.os }}-3.14
 
       - name: Install dependecies
         run: uv sync --all-groups
@@ -59,9 +59,9 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
-          python-version: 3.13
+          python-version: 3.14
           enable-cache: true
-          cache-suffix: uv-${{ runner.os }}-3.13
+          cache-suffix: uv-${{ runner.os }}-3.14
 
       - name: Install dependecies
         run: uv sync --all-groups
@@ -80,9 +80,9 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
-          python-version: 3.13
+          python-version: 3.14
           enable-cache: true
-          cache-suffix: uv-${{ runner.os }}-3.13
+          cache-suffix: uv-${{ runner.os }}-3.14
 
       - name: Install dependecies
         run: uv sync --all-groups

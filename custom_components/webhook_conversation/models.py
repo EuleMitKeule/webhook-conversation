@@ -52,6 +52,7 @@ class WebhookConversationPayload(TypedDict):
     exposed_entities: NotRequired[str]
     language: NotRequired[str]
     user_id: NotRequired[str | None]
+    user_name: NotRequired[str | None]
 
     # task fields
     binary_objects: NotRequired[list[WebhookConversationBinaryObject]]
@@ -72,3 +73,4 @@ class WebhookSTTRequestPayload(TypedDict):
 
     audio: WebhookConversationBinaryObject
     language: str
+    conversation_id: NotRequired[str]
