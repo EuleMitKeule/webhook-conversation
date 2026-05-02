@@ -186,6 +186,7 @@ class WebhookConversationEntity(
             payload["language"] = user_input.language
             payload["user_id"] = user_input.context.user_id
             payload["user_name"] = user.name if user else None
+        else:
             raise HomeAssistantError(
                 f"Webhook tool call loop exceeded {MAX_TOOL_ITERATIONS} iterations"
             )
