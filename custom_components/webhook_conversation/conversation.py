@@ -146,7 +146,7 @@ class WebhookConversationEntity(
                 ):
                     pass
             else:
-                result = await self._send_payload(payload)
+                result = await self._send_payload(payload, allow_tool_only=True)
                 reply = result.get(output_field)
                 tool_calls = _parse_tool_calls(result.get("tool_calls"))
                 async for _ in chat_log.async_add_assistant_content(
@@ -161,7 +161,7 @@ class WebhookConversationEntity(
             if not chat_log.unresponded_tool_results:
                 break
 
-            payload = self._build_payload(chat_log)
+            payload = self._build_payload(chat_log, include_last=True)
             payload["query"] = user_messages[-1]["content"]
             payload["agent_id"] = user_input.agent_id
             payload["device_id"] = user_input.device_id

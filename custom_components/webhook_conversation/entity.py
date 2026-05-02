@@ -92,7 +92,9 @@ class WebhookConversationLLMBaseEntity(WebhookConversationBaseEntity):
         )
 
     async def _send_payload(
-        self, payload: WebhookConversationPayload
+        self,
+        payload: WebhookConversationPayload,
+        allow_tool_only: bool = False,
     ) -> dict[str, Any]:
         """Send the payload to the webhook."""
         _LOGGER.debug(
@@ -121,7 +123,8 @@ class WebhookConversationLLMBaseEntity(WebhookConversationBaseEntity):
             CONF_OUTPUT_FIELD, DEFAULT_OUTPUT_FIELD
         )
         if not isinstance(result, dict) or (
-            output_field not in result and "tool_calls" not in result
+            output_field not in result
+            and not (allow_tool_only and "tool_calls" in result)
         ):
             raise HomeAssistantError(f"Invalid webhook response: {result}")
 
@@ -166,16 +169,17 @@ class WebhookConversationLLMBaseEntity(WebhookConversationBaseEntity):
                             continue
 
     def _build_payload(
-        self, chat_log: conversation.ChatLog
+        self, chat_log: conversation.ChatLog, include_last: bool = False
     ) -> WebhookConversationPayload:
         """Create a base payload from the chat log for webhook calls."""
         system_message = chat_log.content[0]
         if not isinstance(system_message, conversation.SystemContent):
             raise TypeError("First message must be a system message")
 
+        end_idx = len(chat_log.content) if include_last else -1
         messages = [
             self._convert_content_to_param(content)
-            for content in chat_log.content[1:-1]
+            for content in chat_log.content[1:end_idx]
         ]
 
         return WebhookConversationPayload(
