@@ -6,7 +6,6 @@ import logging
 from typing import Any, cast
 
 import voluptuous as vol
-
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
@@ -294,10 +293,8 @@ class WebhookSubentryFlowHandler(ConfigSubentryFlow):
         )
 
         webhook_url: str = user_input[CONF_WEBHOOK_URL]
-        valid_http = webhook_url.startswith("http://") or webhook_url.startswith(
-            "https://"
-        )
-        valid_ws = webhook_url.startswith("ws://") or webhook_url.startswith("wss://")
+        valid_http = webhook_url.startswith(("http://", "https://"))
+        valid_ws = webhook_url.startswith(("ws://", "wss://"))
         if not valid_http and not (self._subentry_type == "stt" and valid_ws):
             _LOGGER.error("Invalid webhook URL: %s", webhook_url)
             errors["base"] = "invalid_webhook_url"

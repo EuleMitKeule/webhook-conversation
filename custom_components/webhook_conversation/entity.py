@@ -3,19 +3,19 @@
 from __future__ import annotations
 
 import base64
-from collections.abc import AsyncGenerator
 import json
 import logging
+from collections.abc import AsyncGenerator
 from typing import Any
 
 import aiohttp
-
 from homeassistant.components import conversation
 from homeassistant.config_entries import ConfigEntry, ConfigSubentry
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.json import json_dumps
 
 from .const import (
     CONF_AUTH_TYPE,
@@ -210,7 +210,7 @@ class WebhookConversationLLMBaseEntity(WebhookConversationBaseEntity):
             return WebhookConversationMessage(
                 {
                     "role": content.role,
-                    "content": json.dumps(content.tool_result)
+                    "content": json_dumps(content.tool_result)
                     if content.tool_result is not None
                     else "",
                     "tool_call_id": content.tool_call_id,
