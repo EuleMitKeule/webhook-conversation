@@ -1,8 +1,8 @@
 """Conversation platform for webhook conversation integration."""
 
-from collections.abc import AsyncIterator
 import json
 import logging
+from collections.abc import AsyncIterator
 from typing import Any, Literal
 
 from homeassistant.components import conversation

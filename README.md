@@ -119,7 +119,15 @@ This example workflow includes:
 - **Extract Attachments**: JavaScript code node that processes binary attachments from AI Tasks
 - **OpenAI Integration**: GPT model integration with dynamic response format (text or JSON)
 - **AI Agent**: LangChain agent that handles the conversation and processes attachments
+- **Window Buffer Memory**: Persists chat history per Home Assistant conversation using `conversation_id` as the n8n Session ID
 - **Response Handler**: Responses are returned to Home Assistant in chunks
+
+> [!IMPORTANT]
+> Home Assistant does **not** send a `sessionID` / `sessionId` field. The conversation key is `conversation_id`.
+>
+> n8n Simple Memory / Window Buffer Memory nodes call this value a Session ID. Because those nodes sit on an AI sub-connection, `$json.body.conversation_id` is empty there — configure a **custom** session key that reads the Webhook item explicitly:
+>
+> `{{ $('Webhook').first().json.body.conversation_id }}`
 
 **To use this example:**
 
@@ -227,7 +235,7 @@ First text message in WebSocket (example for WAV/PCM input):
 ```
 
 > [!NOTE]
-> For **conversations**: The `device_id` and `device_info` fields are only set when the conversation was initiated via a voice satellite. The `language` field contains the language code (e.g., "de-DE") configured for the conversation. The `agent_id` field contains the entity ID of the conversation agent.
+> For **conversations**: Use `conversation_id` as the n8n Memory Session ID — there is no `sessionID` field. The `device_id` and `device_info` fields are only set when the conversation was initiated via a voice satellite. The `language` field contains the language code (e.g., "de-DE") configured for the conversation. The `agent_id` field contains the entity ID of the conversation agent.
 >
 > For **AI tasks**: The `binary_objects` field is only included when attachments are present in the AI task. The `structure` field is only included when a JSON schema is provided by the action call. The `task_name` field is only included for AI tasks when provided by the action call. Each attachment is converted to base64 format and includes metadata such as filename, file path, and MIME type.
 >

@@ -35,8 +35,18 @@ Changelog = "https://github.com/EuleMitKeule/webhook-conversation/releases"
 Issues = "https://github.com/eulemitkeule/webhook-conversation/issues"
 
 [dependency-groups]
-dev = ["mypy>=1.17.1", "ruff>=0.12.9", "homeassistant>=2026.4.0"]
+dev = [
+    "ty>=0.0.78",
+    "ruff>=0.16.6",
+    "homeassistant>=2026.9.1",
+    "voluptuous-openapi>=0.4.1",
+]
 
-[[tool.mypy.overrides]]
-module = ["voluptuous_openapi.*"]
-follow_untyped_imports = true
+[tool.ty.environment]
+python-version = "3.14"
+
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.ruff.lint.isort]
+combine-as-imports = true

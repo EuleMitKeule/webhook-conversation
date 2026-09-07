@@ -11,21 +11,24 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+
 jobs:
   cache:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v10
         with:
-          python-version: 3.14
+          python-version: 3.14.2
           enable-cache: true
-          cache-suffix: uv-${{ runner.os }}-3.14
+          cache-suffix: uv-${{ runner.os }}-3.14.2
 
-      - name: Install dependecies
+      - name: Install dependencies
         run: uv sync --all-groups
 
   ruff:
@@ -33,58 +36,58 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v10
         with:
-          python-version: 3.14
+          python-version: 3.14.2
           enable-cache: true
-          cache-suffix: uv-${{ runner.os }}-3.14
+          cache-suffix: uv-${{ runner.os }}-3.14.2
 
-      - name: Install dependecies
+      - name: Install dependencies
         run: uv sync --all-groups
 
       - name: Run ruff
         run: |
           uv run ruff check .
 
-  mypy:
+  ty:
     needs: cache
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v10
         with:
-          python-version: 3.14
+          python-version: 3.14.2
           enable-cache: true
-          cache-suffix: uv-${{ runner.os }}-3.14
+          cache-suffix: uv-${{ runner.os }}-3.14.2
 
-      - name: Install dependecies
+      - name: Install dependencies
         run: uv sync --all-groups
 
-      - name: Run mypy
+      - name: Run ty
         run: |
-          uv run mypy --strict .
+          uv run ty check --output-format github
 
   hacs:
     needs: cache
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v10
         with:
-          python-version: 3.14
+          python-version: 3.14.2
           enable-cache: true
-          cache-suffix: uv-${{ runner.os }}-3.14
+          cache-suffix: uv-${{ runner.os }}-3.14.2
 
-      - name: Install dependecies
+      - name: Install dependencies
         run: uv sync --all-groups
 
       - name: Run HACS
@@ -97,7 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Hassfest
         uses: home-assistant/actions/hassfest@master

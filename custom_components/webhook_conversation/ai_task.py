@@ -7,13 +7,12 @@ import logging
 from typing import Any
 
 import anyio
-from voluptuous_openapi import convert
-
 from homeassistant.components import ai_task, conversation
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import llm
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from voluptuous_openapi import convert
 
 from .const import CONF_OUTPUT_FIELD, DEFAULT_OUTPUT_FIELD
 from .entity import WebhookConversationLLMBaseEntity

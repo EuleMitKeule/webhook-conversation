@@ -79,7 +79,7 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $json.body.conversation_id }}"
+        "sessionKey": "={{ $('Webhook').first().json.body.conversation_id }}"
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
@@ -88,7 +88,9 @@
         80
       ],
       "id": "881a1f54-0edc-4b8f-b923-e03d8d34922a",
-      "name": "Memory"
+      "name": "Memory",
+      "notes": "n8n Memory nodes require a Session ID. Home Assistant sends conversation_id (not sessionID). Read it from the Webhook node — $json is empty on this AI sub-node.",
+      "notesInFlow": true
     },
     {
       "parameters": {
