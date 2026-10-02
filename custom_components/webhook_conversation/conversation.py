@@ -129,7 +129,7 @@ class WebhookConversationEntity(
             else None
         )
         payload["exposed_entities"] = json.dumps(
-            self._get_exposed_entities(), default=set_default
+            self._get_exposed_entities(), default=set_default, ensure_ascii=False
         )
         payload["language"] = user_input.language
         user = (
@@ -181,7 +181,7 @@ class WebhookConversationEntity(
                 else None
             )
             payload["exposed_entities"] = json.dumps(
-                self._get_exposed_entities(), default=set_default
+                self._get_exposed_entities(), default=set_default, ensure_ascii=False
             )
             payload["language"] = user_input.language
             payload["user_id"] = user_input.context.user_id
