@@ -68,6 +68,7 @@ After the integration is added, you'll see the "Webhook Conversation" integratio
 1. **Add Conversation Agent**: Click the **"Add Entry"** button on the integration page and select **"Conversation Agent"** to create a new webhook-based conversation agent. Configure it with:
    - **Webhook URL**: The URL of your webhook endpoint (remember to activate the workflow in n8n and to use the production webhook URL)
    - **Output Field**: The field name in the webhook response containing the reply (default: "output")
+   - **Error Message**: The message returned (and spoken by TTS) when the webhook reports an error while streaming. The raw error is written to the log instead (default: "Sorry, something went wrong. Please try again later.")
    - **Timeout**: The timeout in seconds for waiting for a response (default: 30 seconds, range: 1-300 seconds)
    - **Enable Response Streaming**: Enable real-time streaming of responses as they are generated (default: disabled)
    - **System Prompt**: A custom system prompt to provide additional context or instructions to your AI model
@@ -75,6 +76,7 @@ After the integration is added, you'll see the "Webhook Conversation" integratio
 2. **Add AI Task**: Click the **"Add Entry"** button on the integration page and select **"AI Task"** to create a webhook-based AI task handler. Configure it with:
    - **Webhook URL**: The URL of your webhook endpoint (remember to activate the workflow in n8n and to use the production webhook URL)
    - **Output Field**: The field name in the webhook response containing the reply (default: "output")
+   - **Error Message**: The message returned (and spoken by TTS) when the webhook reports an error while streaming. The raw error is written to the log instead (default: "Sorry, something went wrong. Please try again later.")
    - **Timeout**: The timeout in seconds for waiting for a response (default: 30 seconds, range: 1-300 seconds)
    - **Enable Response Streaming**: Enable real-time streaming of responses as they are generated (default: disabled)
    - **System Prompt**: A custom system prompt to provide additional context or instructions to your AI model

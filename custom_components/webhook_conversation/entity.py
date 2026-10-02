@@ -20,6 +20,7 @@ from homeassistant.helpers.json import json_dumps
 from .const import (
     CONF_AUTH_TYPE,
     CONF_ENABLE_STREAMING,
+    CONF_ERROR_MESSAGE,
     CONF_OUTPUT_FIELD,
     CONF_PASSWORD,
     CONF_PROMPT,
@@ -28,6 +29,7 @@ from .const import (
     CONF_WEBHOOK_URL,
     DEFAULT_AUTH_TYPE,
     DEFAULT_ENABLE_STREAMING,
+    DEFAULT_ERROR_MESSAGE,
     DEFAULT_OUTPUT_FIELD,
     DEFAULT_TIMEOUT,
     DOMAIN,
@@ -165,8 +167,16 @@ class WebhookConversationLLMBaseEntity(WebhookConversationBaseEntity):
                             chunk_data = json.loads(line_str)
                             chunk_type = chunk_data.get("type")
                             if chunk_type == "error":
+                                # The message ends up in the conversation response
+                                # (and is spoken by TTS), so do not expose the raw
+                                # chunk: log it and show the configured message.
+                                _LOGGER.warning(
+                                    "Webhook streaming error: %s", chunk_data
+                                )
                                 raise HomeAssistantError(
-                                    f"n8n error: {chunk_data.get('message', chunk_data)}"
+                                    self._subentry.data.get(
+                                        CONF_ERROR_MESSAGE, DEFAULT_ERROR_MESSAGE
+                                    )
                                 )
                             # We don't break on "end" because n8n can send multiple
                             # begin/end blocks when using tools or intermediate steps.

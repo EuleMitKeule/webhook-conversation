@@ -26,6 +26,7 @@ from homeassistant.util import language as language_util
 from .const import (
     CONF_AUTH_TYPE,
     CONF_ENABLE_STREAMING,
+    CONF_ERROR_MESSAGE,
     CONF_NAME,
     CONF_OUTPUT_FIELD,
     CONF_PASSWORD,
@@ -39,6 +40,7 @@ from .const import (
     DEFAULT_AUTH_TYPE,
     DEFAULT_CONVERSATION_NAME,
     DEFAULT_ENABLE_STREAMING,
+    DEFAULT_ERROR_MESSAGE,
     DEFAULT_OUTPUT_FIELD,
     DEFAULT_PROMPT,
     DEFAULT_STT_NAME,
@@ -123,6 +125,15 @@ def _get_subentry_schema(
                         )
                     },
                     default=DEFAULT_OUTPUT_FIELD,
+                ): str,
+                vol.Optional(
+                    CONF_ERROR_MESSAGE,
+                    description={
+                        "suggested_value": options.get(
+                            CONF_ERROR_MESSAGE, DEFAULT_ERROR_MESSAGE
+                        )
+                    },
+                    default=DEFAULT_ERROR_MESSAGE,
                 ): str,
                 vol.Optional(
                     CONF_PROMPT,

@@ -11,6 +11,7 @@
           "data": {
             "webhook_url": "Webhook URL",
             "output_field": "Output field name",
+            "error_message": "Error message",
             "prompt": "System Prompt",
             "timeout": "Request timeout (seconds)",
             "enable_streaming": "Enable response streaming",
@@ -47,6 +48,7 @@
           "data": {
             "webhook_url": "Webhook URL",
             "output_field": "Output field name",
+            "error_message": "Error message",
             "prompt": "System Prompt",
             "timeout": "Request timeout (seconds)",
             "enable_streaming": "Enable response streaming",
